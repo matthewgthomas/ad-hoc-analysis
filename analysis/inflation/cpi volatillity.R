@@ -91,3 +91,10 @@ cpih_volatility_components |>
   coord_flip()
 
 ggsave("analysis/inflation/CPIH volatility by component.png", width = 300, height = 175, units = "mm")
+
+# Sub-components of CPIH
+# e.g. CPIH INDEX 11.1.1.1 Restaurants, cafes and dancing establishments 2015=100
+#TODO: Fix the regex. This doesn't work at the moment
+cpih_subcomponents <-
+  cpih_components_all |>
+  select(Year, matches("CPI INDEX [0-9][0-9]\\.[0-9]\\.[0-9]\\.[0-9] "))
