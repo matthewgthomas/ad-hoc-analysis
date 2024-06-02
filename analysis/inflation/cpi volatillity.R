@@ -121,6 +121,7 @@ cpi_volatility |>
 ggsave("analysis/inflation/CPI volatility over time.png", width = 100, height = 100, units = "mm")
 
 # Explore CPI component volatility over different time periods
+# Recession dates from https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_Kingdom
 cpi_volatility_components <-
   cpi_components |>
   mutate(epoch = case_when(
