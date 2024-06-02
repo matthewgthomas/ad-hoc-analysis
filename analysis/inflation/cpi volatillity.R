@@ -1,7 +1,6 @@
 # Explore how internal purchasing power of the pound has changed over time
 # Analyse variation/volatility in components of the consumer price index
 library(tidyverse)
-library(chron)
 
 # ---- Load consumer price index timeseries ----
 # Source: https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceindices
@@ -72,12 +71,6 @@ cpih_volatility |>
 ggsave("analysis/inflation/CPIH volatility over time.png", width = 100, height = 100, units = "mm")
 
 # What are the most volatile components?
-cv <- list(
-  mean = ~mean(.x),
-  sd = ~sd(.x),
-  cv = ~sd(.x) / mean
-)
-
 cpih_volatility_components <-
   cpih_components |>
   select(-Year) |>
@@ -92,13 +85,6 @@ cpih_volatility_components |>
   coord_flip()
 
 ggsave("analysis/inflation/CPIH volatility by component.png", width = 300, height = 175, units = "mm")
-
-# Sub-components of CPIH
-# e.g. CPIH INDEX 11.1.1.1 Restaurants, cafes and dancing establishments 2015=100
-#TODO: Fix the regex. This doesn't work at the moment
-cpih_subcomponents <-
-  cpih_components_all |>
-  select(Year, matches("CPI INDEX [0-9][0-9]\\.[0-9]\\.[0-9]\\.[0-9] "))
 
 # ---- CPI components ----
 # Fetch CPI index components and subcomponents names
@@ -170,4 +156,4 @@ cpi_volatility_components |>
     x = NULL
   )
 
-ggsave("analysis/inflation/CPI volatility by component.png", width = 500, height = 500, units = "mm")
+ggsave("analysis/inflation/CPI volatility by component.png", width = 300, height = 200, units = "mm")
