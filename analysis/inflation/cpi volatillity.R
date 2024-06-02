@@ -133,3 +133,41 @@ cpi_volatility |>
   geom_line()
 
 ggsave("analysis/inflation/CPI volatility over time.png", width = 100, height = 100, units = "mm")
+
+# Explore CPI component volatility over different time periods
+cpi_volatility_components <-
+  cpi_components |>
+  mutate(epoch = case_when(
+    Year < yq("1990 Q3") ~ "Late 80s / early 90s",
+    Year >= yq("1990 Q3") & Year <= yq("1991 Q3") ~ "Early 90s recession",
+    Year > yq("1991 Q3") & Year < yq("2008 Q2") ~ "After 90s recession",
+    Year >= yq("2008 Q2") & Year <= yq("2009 Q2") ~ "Great Recession",
+    Year > yq("2009 Q2") & Year < yq("2020 Q1") ~ "After financial crisis",
+    Year >= yq("2020 Q1") & Year <= yq("2020 Q2") ~ "Covid-19 recession",
+    Year > yq("2020 Q2") & Year < yq("2023 Q3") ~ "After Covid recession",
+    Year >= yq("2023 Q3") & Year <= yq("2023 Q4") ~ "2023 recession",
+    Year > yq("2023 Q4") ~ "Post-2023 recession"
+  )) |>
+  mutate(epoch = factor(epoch, levels = c("Late 80s / early 90s", "Early 90s recession", "After 90s recession", "Great Recession", "After financial crisis", "Covid-19 recession", "After Covid recession", "2023 recession", "Post-2023 recession"))) |>
+  # relocate(epoch) |>
+  select(-Year) |>
+  group_by(epoch) |>
+  summarise(
+    across(where(is.double), ~sd(.x, na.rm = TRUE) / mean(.x, na.rm = TRUE))
+  ) |>
+  pivot_longer(cols = -epoch, names_to = "CPI component", values_to = "CV")
+
+cpi_volatility_components |>
+  ggplot(aes(x = reorder(`CPI component`, CV, sum), y = CV)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~epoch) +
+  theme(
+    plot.title.position = "plot"
+  ) +
+  labs(
+    title = "Coefficient of variation for CPI components, by recession",
+    x = NULL
+  )
+
+ggsave("analysis/inflation/CPI volatility by component.png", width = 500, height = 500, units = "mm")
