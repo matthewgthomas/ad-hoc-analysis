@@ -3,7 +3,7 @@
 library(tidyverse)
 
 # ---- Load consumer price index timeseries ----
-# Source:
+# Source: https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceindices
 #Sys.setenv("VROOM_CONNECTION_SIZE" = 300000)
 cpi_components_raw <- read_csv("https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/consumerpriceindices/current/mm23.csv")
 #Sys.unsetenv("VROOM_CONNECTION_SIZE")
