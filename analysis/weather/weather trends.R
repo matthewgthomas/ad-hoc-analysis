@@ -27,6 +27,8 @@ weather_historical |>
   geom_line(data = weather_2024, aes(x = datetime), colour = "red") +
   theme_classic()
 
+ggsave("analysis/weather/temperature trends.png", height = 100, width = 150, units = "mm")
+
 # Plot rainfall
 weather_data |>
   ggplot(aes(x = monthday, y = precip, group = year)) +
