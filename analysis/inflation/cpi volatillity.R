@@ -88,8 +88,8 @@ ggsave("analysis/inflation/CPIH volatility by component.png", width = 300, heigh
 
 # ---- CPI components ----
 # Fetch CPI index components and subcomponents names
-component_names <- sort(grep(pattern = "CPI INDEX \\d{2} ", names(cpi_raw), value = TRUE))
-# component_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
+# component_names <- sort(grep(pattern = "CPI INDEX \\d{2} ", names(cpi_raw), value = TRUE))
+component_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
 # subcomponent_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
 
 cpi_components <-
@@ -187,7 +187,7 @@ cpi_components_recessions <-
 cpi_components_recessions |>
   pivot_longer(cols = -(epoch:Year), names_to = "CPI component", values_to = "pct_change") |>
 
-  mutate(`CPI component` = str_remove(`CPI component`, "CPI INDEX [0-9]{2} : ")) |>
+  mutate(`CPI component` = str_remove(`CPI component`, "CPI INDEX [0-9]{2}\\.[0-9]{1} : ")) |>
   mutate(`CPI component` = str_remove(`CPI component`, " 2015=100")) |>
 
   ggplot(aes(x = Year, y = pct_change, group = `CPI component`)) +
