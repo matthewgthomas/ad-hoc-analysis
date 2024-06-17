@@ -88,9 +88,9 @@ ggsave("analysis/inflation/CPIH volatility by component.png", width = 300, heigh
 
 # ---- CPI components ----
 # Fetch CPI index components and subcomponents names
-# component_names <- sort(grep(pattern = "CPI INDEX \\d{2} ", names(cpi_raw), value = TRUE))
-component_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
-subcomponent_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
+component_names <- sort(grep(pattern = "CPI INDEX \\d{2} ", names(cpi_raw), value = TRUE))
+# component_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
+# subcomponent_names <- sort(grep(pattern = "CPI INDEX \\d{2}\\.\\d{1,2}\\.\\d{1,2} ", names(cpi_raw), value = TRUE))
 
 cpi_components <-
   cpi_raw |>
@@ -158,3 +158,49 @@ cpi_volatility_components |>
   )
 
 ggsave("analysis/inflation/CPI volatility by component.png", width = 300, height = 200, units = "mm")
+
+# ---- Change in CPI component indices since every recession ----
+cpi_components_recessions <-
+  cpi_components |>
+
+  # Don't need late 80s / early 90s
+  filter(Year >= yq("1990 Q3")) |>
+
+  mutate(epoch = case_when(
+    Year >= yq("1990 Q3") & Year < yq("2008 Q2") ~ "Early 90s recession",
+    Year >= yq("2008 Q2") & Year < yq("2020 Q1") ~ "Great Recession",
+    Year >= yq("2020 Q1") & Year < yq("2023 Q3") ~ "Covid-19 recession",
+    Year > yq("2020 Q2") & Year < yq("2023 Q3") ~ "After Covid recession",
+    Year >= yq("2023 Q3") ~ "2023 recession"
+  )) |>
+  mutate(epoch = factor(epoch, levels = c("Early 90s recession", "Great Recession", "Covid-19 recession", "2023 recession"))) |>
+  relocate(epoch)
+
+# Calculate percentage change for each component since the start of every recession
+cpi_components_recessions <-
+  cpi_components_recessions |>
+  group_by(epoch) |>
+  mutate(across(starts_with("CPI"), ~ (.x - first(.x)) / first(.x))) |>
+  ungroup()
+
+# Plot % change in each component during/after each recession
+cpi_components_recessions |>
+  pivot_longer(cols = -(epoch:Year), names_to = "CPI component", values_to = "pct_change") |>
+
+  mutate(`CPI component` = str_remove(`CPI component`, "CPI INDEX [0-9]{2} : ")) |>
+  mutate(`CPI component` = str_remove(`CPI component`, " 2015=100")) |>
+
+  ggplot(aes(x = Year, y = pct_change, group = `CPI component`)) +
+  geom_line(aes(colour = `CPI component`)) +
+  geom_hline(yintercept = 0) +
+  facet_wrap(~epoch, scales = "free") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic() +
+  theme(legend.position = "top") +
+  labs(
+    title = "Change in CPI components during and after recessions",
+    x = NULL,
+    y = "% change since start of recession"
+  )
+
+plotly::ggplotly()
