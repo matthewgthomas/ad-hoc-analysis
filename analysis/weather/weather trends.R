@@ -1,7 +1,7 @@
 library(tidyverse)
 
 # Years
-first_year <- 2006
+first_year <- 2004
 last_year <- 2024
 
 # Fetch historical weather data from https://www.visualcrossing.com/weather/weather-data-services
@@ -23,15 +23,31 @@ weather_historical <-
 # Plot temperatures
 weather_historical |>
   ggplot(aes(x = monthday, y = feelslike, group = year)) +
-  geom_line(colour = "grey70") +
+  geom_line(colour = "grey85") +
   geom_line(data = weather_2024, aes(x = datetime), colour = "red") +
-  theme_classic()
+  theme_classic() +
+  theme(plot.title.position = "plot") +
+  labs(
+    title = "Daily temperatures from 1st May to 15th June over the last 20 years",
+    subtitle = "Red line is temperatures in 2024; grey lines show previous years",
+    x = NULL,
+    y = "'Feels like' temperature (Celsius)"
+  )
 
 ggsave("analysis/weather/temperature trends.png", height = 100, width = 150, units = "mm")
 
 # Plot rainfall
-weather_data |>
+weather_historical |>
   ggplot(aes(x = monthday, y = precip, group = year)) +
-  geom_line(colour = "grey70") +
+  geom_line(colour = "grey85") +
   geom_line(data = weather_2024, aes(x = datetime), colour = "red") +
-  theme_classic()
+  theme_classic() +
+  theme(plot.title.position = "plot") +
+  labs(
+    title = "Daily rainfall from 1st May to 15th June over the last 20 years",
+    subtitle = "Red line is rain in 2024; grey lines show previous years",
+    x = NULL,
+    y = "Precipitation (mm)"
+  )
+
+ggsave("analysis/weather/rainfall trends.png", height = 100, width = 150, units = "mm")
