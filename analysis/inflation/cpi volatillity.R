@@ -106,6 +106,10 @@ cpi_components <-
 # Calculate coefficient of variation across components for each month
 cpi_volatility <-
   cpi_components |>
+
+  # Reindex to oldest index in the data
+  mutate(across(starts_with("CPI"), ~ .x / first(.x))) |>
+
   rowwise(Year) |>
   summarise(
     mean = mean(c_across(where(is.double)), na.rm = TRUE),
