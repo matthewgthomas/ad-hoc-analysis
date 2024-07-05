@@ -13,10 +13,10 @@ election_results <-
   # Manually add projected vote share for 2024
   # Source: https://www.theguardian.com/politics/ng-interactive/2024/jul/04/uk-general-election-results-2024-live-in-full
   election_results |>
-  add_row(Election = "2024", Country = "UK", Party = "CON", `Vote share` = .237, Seats = 119, `Total seats` = 650) |>
-  add_row(Election = "2024", Country = "UK", Party = "LAB", `Vote share` = .339, Seats = 411, `Total seats` = 650) |>
+  add_row(Election = "2024", Country = "UK", Party = "CON", `Vote share` = .237, Seats = 121, `Total seats` = 650) |>
+  add_row(Election = "2024", Country = "UK", Party = "LAB", `Vote share` = .338, Seats = 412, `Total seats` = 650) |>
   add_row(Election = "2024", Country = "UK", Party = "LD", `Vote share` = .122, Seats = 71, `Total seats` = 650) |>
-  add_row(Election = "2024", Country = "UK", Party = "PC/SNP", `Vote share` = (.024 + .007), Seats = 13, `Total seats` = 650) |>
+  add_row(Election = "2024", Country = "UK", Party = "PC/SNP", `Vote share` = (.025 + .007), Seats = 13, `Total seats` = 650) |>
   add_row(Election = "2024", Country = "UK", Party = "Other", `Vote share` = .127, Seats = 27, `Total seats` = 650) |>
   add_row(Election = "2024", Country = "UK", Party = "REF", `Vote share` = .143, Seats = 4, `Total seats` = 650) |>
 
@@ -136,18 +136,3 @@ winning_shares |>
   )
 
 ggsave("analysis/elections/seat share of winning parties.png", width = 200, height = 175, units = "mm")
-
-# ---- Vote share upon winning ----
-# Ignore the coalition in 1913 and the National Government in 1931 since we can't directly compare vote share
-winning_vote_share <-
-  election_results |>
-  filter(!Election %in% c("1918", "1931")) |>
-
-  # Calculate combined vote share for CON and LD for 2010 election
-  mutate(Party = if_else(Election == "2010" & Party %in% c("CON", "LD"), "Coalition", Party)) |>
-
-  filter(Party == Government) |>
-
-  group_by(Date, Government) |>
-  summarise(`Seat share` = sum(`Seat share`)) |>
-  ungroup()
