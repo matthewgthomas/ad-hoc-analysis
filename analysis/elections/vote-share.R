@@ -29,7 +29,7 @@ election_results <-
   mutate(`Seat share` = Seats / `Total seats`)
 
 # ---- Election dates ----
-election_dates <- read_excel("data/general-elections-and-governments.xlsx", sheet = "1. Governments", skip = 1)
+election_dates <- read_excel("analysis/elections/general-elections-and-governments.xlsx", sheet = "1. Governments", skip = 1)
 
 election_dates <-
   election_dates |>
@@ -105,3 +105,5 @@ winning_vote_share |>
     y = "Vote share of party/ies forming government",
     caption = "@matthewgthomas analysis of data from House of Commons Library and The Guardian\nNote: Vote share in the 2024 election is of the seats that have been declared as of 9am on 5 July (with five seats to go)."
   )
+
+ggsave("analysis/elections/vote share of winning parties.png", width = 200, height = 175, units = "mm")
