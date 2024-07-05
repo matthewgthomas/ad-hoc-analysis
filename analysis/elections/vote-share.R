@@ -69,9 +69,9 @@ election_results |>
   scale_color_manual(values = c("#0087dc", "#d50000", "#F6B527", "gray40", "#3B822B", "#12B6CF")) +
   theme_classic()
 
-# Vote share upon winning
+# ---- Vote and seat shares upon winning ----
 # Ignore the coalition in 1913 and the National Government in 1931 since we can't directly compare vote share
-winning_vote_share <-
+winning_shares <-
   election_results |>
   filter(!Election %in% c("1918", "1931")) |>
 
@@ -81,13 +81,17 @@ winning_vote_share <-
   filter(Party == Government) |>
 
   group_by(Date, Government) |>
-  summarise(`Vote share` = sum(`Vote share`)) |>
+  summarise(
+    `Vote share` = sum(`Vote share`),
+    `Seat share` = sum(`Seat share`)
+  ) |>
   ungroup()
 
-winning_vote_share |>
+# - Vote share -
+winning_shares |>
   arrange(`Vote share`)
 
-winning_vote_share |>
+winning_shares |>
   ggplot(aes(x = Date, y = `Vote share`, group = 1, colour = Government)) +
   geom_line() +
   geom_point(size = 3) +
@@ -107,3 +111,43 @@ winning_vote_share |>
   )
 
 ggsave("analysis/elections/vote share of winning parties.png", width = 200, height = 175, units = "mm")
+
+# - Seat share -
+winning_shares |>
+  arrange(desc(`Seat share`))
+
+winning_shares |>
+  ggplot(aes(x = Date, y = `Seat share`, group = 1, colour = Government)) +
+  geom_line() +
+  geom_point(size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(values = c("grey40", "#0087dc", "#d50000")) +
+  theme_classic() +
+  theme(
+    plot.title.position = "plot",
+    legend.position = "top"
+  ) +
+  labs(
+    title = "Labour's share of seats in the 2024 election is as high as in their 1997 victory",
+    subtitle = "... and the highest of any winning party since 1924 election",
+    x = NULL,
+    y = "Seat share of party/ies forming government",
+    caption = "@matthewgthomas analysis of data from House of Commons Library and The Guardian\nNote: Vote share in the 2024 election is of the seats that have been declared as of 9am on 5 July (with five seats to go)."
+  )
+
+ggsave("analysis/elections/seat share of winning parties.png", width = 200, height = 175, units = "mm")
+
+# ---- Vote share upon winning ----
+# Ignore the coalition in 1913 and the National Government in 1931 since we can't directly compare vote share
+winning_vote_share <-
+  election_results |>
+  filter(!Election %in% c("1918", "1931")) |>
+
+  # Calculate combined vote share for CON and LD for 2010 election
+  mutate(Party = if_else(Election == "2010" & Party %in% c("CON", "LD"), "Coalition", Party)) |>
+
+  filter(Party == Government) |>
+
+  group_by(Date, Government) |>
+  summarise(`Seat share` = sum(`Seat share`)) |>
+  ungroup()
