@@ -21,12 +21,12 @@ cons <-
 
 # Constituency to Local Authority lookup
 # Source: https://geoportal.statistics.gov.uk/datasets/ons::ward-to-westminster-parliamentary-constituency-to-lad-to-utla-july-2024-lookup-in-uk/about
-lookup_cons_ltla <- read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/WD24_PCON24_LAD24_UTLA24_UK_LU/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
-
-lookup_cons_ltla <-
-  lookup_cons_ltla |>
-  st_drop_geometry() |>
-  distinct(constituency_code = PCON24CD, ltla24_code = LAD24CD)
+# lookup_cons_ltla <- read_sf("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/WD24_PCON24_LAD24_UTLA24_UK_LU/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
+#
+# lookup_cons_ltla <-
+#   lookup_cons_ltla |>
+#   st_drop_geometry() |>
+#   distinct(constituency_code = PCON24CD, ltla24_code = LAD24CD)
 
 # Fetch list of candidates from Democracy Club
 # Source: https://candidates.democracyclub.org.uk/data/?election_date=2024-07-04&ballot_paper_id=&election_id=&party_id=&cancelled=&locked=
@@ -77,6 +77,7 @@ common_names_simplified <-
     first_name,
     c("Chris", "Christopher") ~ "Christopher",
     c("Matthew", "Matt", "Mattie", "Matty") ~ "Matthew",
+    c("Dave", "David") ~ "David",
     .default = first_name
   )) |>
   count(first_name, sort = TRUE)
@@ -91,6 +92,7 @@ winning_names <-
     firstname,
     c("Chris", "Christopher") ~ "Christopher",
     c("Matthew", "Matt", "Mattie", "Matty") ~ "Matthew",
+    c("Dave", "David") ~ "David",
     .default = firstname
   )) |>
 
@@ -101,5 +103,5 @@ winning_names <-
   mutate(prop = n_winners / n)
 
 winning_names |>
-  filter(str_detect(firstname, "Sarah|Matt|Natasha|Chris$|Christopher")) |>
+  filter(str_detect(firstname, "Sarah|Matt|Natasha|Chris$|Christopher|David")) |>
   arrange(desc(prop))
