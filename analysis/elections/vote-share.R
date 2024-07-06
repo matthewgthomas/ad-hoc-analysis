@@ -136,3 +136,65 @@ winning_shares |>
   )
 
 ggsave("analysis/elections/seat share of winning parties.png", width = 200, height = 175, units = "mm")
+
+# ---- Compare vote and seat shares for all parties, highlighting winners ----
+# Ignore the coalition in 1913 and the National Government in 1931 since we can't directly compare vote share
+all_shares <-
+  election_results |>
+  filter(!Election %in% c("1918", "1931", "1935")) |>
+  filter(!is.na(`Vote share`)) |>
+
+  # Set alpha values for chart
+  mutate(Winner = if_else(Party == Government, "yes", "no")) |>
+
+  group_by(Election, Party, Government, Winner) |>
+  summarise(
+    `Vote share` = sum(`Vote share`),
+    `Seat share` = sum(`Seat share`)
+  ) |>
+  ungroup()
+
+all_shares |>
+  mutate(Election_Party = str_glue("{Election}_{Party}")) |>
+  pivot_longer(cols = `Vote share`:`Seat share`, names_to = "Share", values_to = "Percentage") |>
+
+  ggplot(aes(x = Election_Party, y = Percentage, colour = Party)) +
+  geom_point(aes(shape = Share, alpha = factor(Winner))) +
+  geom_line(aes(group = Election_Party, alpha = factor(Winner))) +
+  geom_label(
+    aes(
+      Election_Party,
+      0.8, # vertical position of labels
+      label = str_glue(" Winner: {Government} "),
+      color = Government,
+      color = after_scale(colorspace::darken(color, .2))
+    ),
+    fill = NA,
+    fontface = "bold",
+    label.padding = unit(.2, "lines"),
+    label.r = unit(.25, "lines"), # radius of the rounder corners.
+    label.size = .5
+  ) +
+  facet_wrap(~Election, nrow = 1, scales = "free_x") +
+  scale_color_manual(values = c("gray40", "#0087dc", "#d50000", "#F6B527", "gray", "#3B822B", "#12B6CF")) +
+  scale_alpha_manual(values = c(0.6, 1)) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_blank()
+  )
+
+all_shares |>
+  mutate(Discrepancy = `Seat share` - `Vote share`) |> View()
+  mutate(Election_Party = str_glue("{Election}_{Party}")) |>
+
+  ggplot(aes(x = Election_Party, y = Discrepancy, fill = Party)) +
+  geom_col(aes(alpha = factor(Winner))) +
+  facet_wrap(~Election, nrow = 1, scales = "free_x") +
+  scale_fill_manual(values = c("#0087dc", "#d50000", "#F6B527", "gray", "#3B822B", "#12B6CF")) +
+  scale_alpha_manual(values = c(0.6, 1)) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_blank()
+  )
