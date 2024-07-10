@@ -2,7 +2,7 @@ library(tidyverse)
 library(readxl)
 library(IMD)
 library(sf)
-library(ggbeeswarm)
+library(demographr)
 
 # ---- Calculate %-point change in Labour vote share ----
 # Load constituency results 2019 and 2024
@@ -28,19 +28,34 @@ lookup_lsoa_cons <-
   select(lsoa21_code = LSOA21CD, cons_code = PCON25CD)
 
 # ---- Calculate proportions of left-behind areas in each constituency ----
+# Muslim population (%) in each LSOA
+muslim_lsoa21 <-
+  demographr::religion21_lsoa21 |>
+  filter(religion == "Muslim") |>
+  select(lsoa21_code, n_muslim = n)
+
+# Calculate proportion of the Muslim population in a constituency who live in left-behind areas
 cni2023_cons <-
   cni2023_england_lsoa21 |>
-  mutate(CNI_decile = ntile(`Community Needs Index 2023 Rank`, n = 10)) |>
+  # mutate(CNI_decile = ntile(`Community Needs Index 2023 Rank`, n = 10)) |>
+
+  # Merge Muslim population count
+  left_join(muslim_lsoa21) |>
+
   left_join(lookup_lsoa_cons) |>
 
-  select(lsoa21_code, cons_code, `Left Behind Area?`) |>
+  select(lsoa21_code, cons_code, `Left Behind Area?`, n_muslim) |>
 
-  count(cons_code, `Left Behind Area?`) |>
-  pivot_wider(names_from = `Left Behind Area?`, values_from = n) |>
-  mutate(`TRUE` = if_else(is.na(`TRUE`), 0, `TRUE`)) |>
-  mutate(Proportion = `TRUE` / (`TRUE` + `FALSE`))
+  group_by(cons_code, `Left Behind Area?`) |>
+  summarise(n_muslim = sum(n_muslim)) |>
+  ungroup() |>
 
-  # IMD:::calculate_proportion(CNI_decile, cons_code)
+  pivot_wider(names_from = `Left Behind Area?`, values_from = n_muslim) |>
+  replace_na(list(
+    `TRUE` = 0
+  )) |>
+
+  mutate(prop_muslim_lba = `TRUE` / (`TRUE` + `FALSE`))
 
 # ---- Explore Labour swing in left-behind areas ----
 labour_swing_cni <-
@@ -66,15 +81,15 @@ cons_to_highlight <- c(
 seats_to_highlight <-
   labour_swing_cni |>
   filter(cons_name %in% cons_to_highlight) |>
-  filter(Proportion > 0) |>
+  filter(prop_muslim_lba > 0) |>
   mutate(Lab_swing = Lab_swing * 100)
 
 labour_swing_cni |>
   filter(winner_2019 == "Lab") |>
-  filter(Proportion > 0) |>
+  filter(prop_muslim_lba > 0) |>
   mutate(Lab_swing = Lab_swing * 100) |>
 
-  ggplot(aes(x = Proportion, y = Lab_swing)) +
+  ggplot(aes(x = prop_muslim_lba, y = Lab_swing)) +
   geom_hline(yintercept = 0, colour = "black") +
   geom_point(aes(colour = winner), alpha = 0.3, size = 1.2) +
   geom_smooth(method = "lm", colour = "black", linetype = 2, se = FALSE) +
@@ -90,12 +105,12 @@ labour_swing_cni |>
     plot.background = element_rect(fill = "white", colour = NA)
   ) +
   labs(
-    title = "Labour swing slightly increased in 'left-behind' areas",
+    title = str_wrap("Labour swing increased in constituencies with a higher proportion of the Muslim population who live in 'left-behind' areas", 70),
     subtitle = "2019-24, %-point change in Labour vote share among Labour-held seats in 2019",
-    x = "Left-behind neighbourhoods in each constituency",
+    x = "Muslim population living in left-behind areas, % of total in constituency",
     y = "%-point change in Labour vote share",
     colour = "2024 election results",
     caption = "@matthewgthomas analysis of Democracy Club, Rallings and Thrasher, and OCSI data"
   )
 
-ggsave("analysis/elections/labour swing in left-behind areas.png", width = 142, height = 120, units = "mm")
+ggsave("analysis/elections/labour swing in left-behind areas.png", width = 143, height = 120, units = "mm")
