@@ -19,6 +19,7 @@ rename_party <- function(party_name) {
     party_name == "Conservative and Unionist Party" ~ "Conservative",
     party_name == "Liberal Democrats" ~ "LibDem",
     party_name == "Green Party" ~ "Green",
+    party_name == "Plaid Cymru - The Party of Wales" ~ "Plaid Cymru",
     party_name == "Reform UK" ~ "Reform",
     party_name == "Scottish National Party (SNP)" ~ "SNP",
     party_name == "Speaker seeking re-election" ~ "Speaker",
