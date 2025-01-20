@@ -27,7 +27,7 @@ lookup_lsoa_cons <-
   st_drop_geometry() |>
   select(lsoa21_code = LSOA21CD, cons_code = PCON25CD)
 
-# ---- Calculate proportions of left-behind areas in each constituency ----
+# ---- Calculate proportions of Muslim populations left-behind areas in each constituency ----
 # Muslim population (%) in each LSOA
 muslim_lsoa21 <-
   demographr::religion21_lsoa21 |>
@@ -57,6 +57,35 @@ cni2023_cons <-
 
   mutate(prop_muslim_lba = `TRUE` / (`TRUE` + `FALSE`))
 
+# ---- Calculate proportions of white populations left-behind areas in each constituency ----
+# White population (%) in each LSOA
+white_lsoa21 <-
+  demographr::ethnicity21_lsoa21 |>
+  filter(ethnic_group == "White") |>
+  select(lsoa21_code, n_white = n)
+
+# Calculate proportion of the white population in a constituency who live in left-behind areas
+cni2023_cons <-
+  cni2023_england_lsoa21 |>
+
+  # Merge white population count
+  left_join(white_lsoa21) |>
+
+  left_join(lookup_lsoa_cons) |>
+
+  select(lsoa21_code, cons_code, `Left Behind Area?`, n_white) |>
+
+  group_by(cons_code, `Left Behind Area?`) |>
+  summarise(n_white = sum(n_white)) |>
+  ungroup() |>
+
+  pivot_wider(names_from = `Left Behind Area?`, values_from = n_white) |>
+  replace_na(list(
+    `TRUE` = 0
+  )) |>
+
+  mutate(prop_white_lba = `TRUE` / (`TRUE` + `FALSE`))
+
 # ---- Explore Labour swing in left-behind areas ----
 labour_swing_cni <-
   labour_swing |>
@@ -81,17 +110,17 @@ cons_to_highlight <- c(
 seats_to_highlight <-
   labour_swing_cni |>
   filter(cons_name %in% cons_to_highlight) |>
-  filter(prop_muslim_lba > 0) |>
+  filter(prop_white_lba > 0) |>
   mutate(Lab_swing = Lab_swing * 100)
 
 labour_swing_cni |>
   filter(winner_2019 == "Lab") |>
-  filter(prop_muslim_lba > 0) |>
+  filter(prop_white_lba > 0) |>
   mutate(Lab_swing = Lab_swing * 100) |>
 
-  ggplot(aes(x = prop_muslim_lba, y = Lab_swing)) +
+  ggplot(aes(x = prop_white_lba, y = Lab_swing)) +
   geom_hline(yintercept = 0, colour = "black") +
-  geom_point(aes(colour = winner), alpha = 0.3, size = 1.2) +
+  geom_point(aes(colour = winner, text = cons_name), alpha = 0.3, size = 1.2) +
   geom_smooth(method = "lm", colour = "black", linetype = 2, se = FALSE) +
   geom_point(data = seats_to_highlight, aes(colour = winner), shape = 21, alpha = 1, size = 1.3) +
   geom_text(data = seats_to_highlight, aes(label = cons_name), size = 3, hjust = -0.1) +
@@ -114,3 +143,5 @@ labour_swing_cni |>
   )
 
 ggsave("analysis/elections/labour swing in left-behind areas.png", width = 143, height = 120, units = "mm")
+
+plotly::ggplotly()
