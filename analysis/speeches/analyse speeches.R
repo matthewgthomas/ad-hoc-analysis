@@ -1,5 +1,6 @@
-library(readr)
+library(tidyverse)
 library(sylcount)
+library(tidytext)
 
 speech_files <- list.files("analysis/speeches/data/", full.names = TRUE)
 
@@ -46,7 +47,7 @@ speeches <-
     readability(speeches$text)
   )
 
-# Track readability over time
+# ---- Track readability over time ----
 speeches |>
   select(year, re, gl, smog) |>
   pivot_longer(cols = -year, names_to = "measure", values_to = "score") |>
@@ -55,6 +56,7 @@ speeches |>
   geom_line() +
   facet_wrap(~measure)
 
+# ---- Readability of post-war speeches ----
 speeches |>
   filter(year > 1945) |>
   mutate(name_year = str_glue("{person} ({year})")) |>
@@ -62,3 +64,19 @@ speeches |>
   ggplot(aes(x = reorder(name_year, re), y = re)) +
   geom_col() +
   coord_flip()
+
+# ---- What words did Trump (2025) use that previous speeches didn't? ----
+trump_2025 <-
+  speeches |>
+  filter(year == 2025) |>
+  unnest_tokens(word, text) |>
+  distinct(word)
+
+other_speeches <-
+  speeches |>
+  filter(year < 2025) |>
+  unnest_tokens(word, text) |>
+  distinct(word)
+
+trump_2025 |>
+  anti_join(other_speeches)
