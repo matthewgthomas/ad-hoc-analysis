@@ -105,14 +105,19 @@ cob_raw <-
     measures = "20301" # Percent
   )
 
-range(100 - cob_raw$OBS_VALUE)
+pct_foreign_born <- 100 - cob_raw$OBS_VALUE
+
+range(pct_foreign_born)
 #--> Between 1.5% and 72% of people in MSOAs were not born in the UK
+
+hist(pct_foreign_born)
+summary(pct_foreign_born)
 
 # --- Predict social cohesion --------------------------------------------------
 # Simulate across a realistic range of foreign-born and Townsend from -7 to +7
 pred_grid <- simulate_buckner(
   # pct_foreign_seq = seq(0, 100, by = 2),
-  pct_foreign_seq = seq(1.5, 72, by = 2),  # realistic range based on 2021 data
+  pct_foreign_seq = seq(1.5, 72, by = 0.5),  # realistic range based on 2021 data
   townsend_seq    = seq(-7, 7, by = 0.25),
   n_sims = 8000
 )
@@ -140,6 +145,22 @@ ggplot(pred_slices, aes(pct_foreign, mean, group = factor(townsend))) +
              labeller = label_bquote(Townsend == .(townsend))) +
   scale_y_continuous(breaks = seq(1, 5, by = 1), limits = c(1, 5)) +
   labs(x = "% foreign-born", y = "Buckner's index (expected)",
-       title = "Effect of % foreign-born at fixed Townsend levels",
+       title = "Effect of % foreign-born at fixed deprivation levels",
+       subtitle = "Ribbon = 90% simulation interval (coefficient uncertainty)") +
+  theme_minimal()
+
+# Slice plots (effect of Townsend at a few % foreign-born levels)
+slice_levels <- c(1.5, 5, 10, 22, 72)  # realistic levels based on 2021 data
+pred_slices <- pred_grid %>%
+  filter(pct_foreign %in% slice_levels)
+
+ggplot(pred_slices, aes(townsend, mean, group = factor(pct_foreign))) +
+  geom_line() +
+  geom_ribbon(aes(ymin = `p05.5%`, ymax = `p95.95%`), alpha = 0.2) +
+  facet_wrap(~ pct_foreign, nrow = 1,
+             labeller = label_bquote("% foreign-born" == .(pct_foreign))) +
+  scale_y_continuous(breaks = seq(1, 5, by = 1), limits = c(1, 5)) +
+  labs(x = "Townsend (higher = more deprived)", y = "Buckner's index (expected)",
+       title = "Effect of deprivation at fixed % foreign-born levels",
        subtitle = "Ribbon = 90% simulation interval (coefficient uncertainty)") +
   theme_minimal()
