@@ -50,8 +50,9 @@ schools_ethnicity <-
   schools_raw |>
   filter(language == "Total") |>
   filter(ethnicity_minor != "Total") |>
-  select(time_period, new_la_code, la_name, ethnicity_minor, headcount)
+  select(time_period, region_name, new_la_code, la_name, ethnicity_minor, headcount)
 
+# Overall diversity trends in schools
 schools_ethnic_diversity <-
   schools_ethnicity |>
   group_by(time_period) |>
@@ -72,6 +73,24 @@ schools_ethnic_diversity |>
   ggplot(aes(x = time_period, y = rdi)) +
   geom_jitter() +
   geom_smooth() +
+  labs(
+    title = "Trends in ethnic diversity in schools",
+    subtitle = "Each dot = a local authority",
+    y = "Ethnic diversity (0-100, higher = more diverse)"
+  )
+
+# Regional diversity trends in schools
+schools_ethnic_diversity_regional <-
+  schools_ethnicity |>
+  group_by(time_period, region_name) |>
+  calculate_rdi(headcount, ethnicity_minor, new_la_code) |>
+  ungroup()
+
+schools_ethnic_diversity_regional |>
+  ggplot(aes(x = time_period, y = rdi)) +
+  geom_jitter() +
+  geom_smooth() +
+  facet_wrap(~region_name) +
   labs(
     title = "Trends in ethnic diversity in schools",
     subtitle = "Each dot = a local authority",
