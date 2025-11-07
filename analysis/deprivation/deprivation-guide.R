@@ -1,5 +1,40 @@
 library(tidyverse)
+library(geographr)
 library(IMD)
+
+# library(sf)
+
+# ---- Analyse income and employment deprivation ----
+imd_income <-
+  imd2025_england_lsoa21 |>
+  select(lsoa21_code, IMD_decile) |>
+  left_join(
+    imd2025_england_lsoa21_indicators |>
+      select(lsoa21_code, income_domain_numerator)
+  ) |>
+  left_join(
+    lookup_lsoa21_ward24_ltla24 |>
+      select(lsoa21_code, lad_code = ltla24_code, lad_name = ltla24_name)
+  ) |>
+  left_join(
+    lookup_ltla24_region24 |>
+      select(lad_code = ltla24_code, region_name = region24_name)
+  ) |>
+  rename(lsoa_code = lsoa21_code)
+
+imd_income |> 
+  mutate(Core20 = if_else(IMD_decile <= 2, "20% most deprived", "Less-deprived areas")) |>
+  group_by(Core20) |>
+  summarise(n = sum(income_domain_numerator, na.rm = TRUE)) |> 
+  mutate(prop = n / sum(n))
+
+# Wrangle and save for Flourish
+imd_income |>
+  mutate(Core20 = if_else(IMD_decile <= 2, "20% most deprived", "Less-deprived areas")) |>
+  group_by(region_name, Core20) |>
+  summarise(income_domain_numerator = sum(income_domain_numerator, na.rm = TRUE)) |> 
+  pivot_wider(names_from = region_name, values_from = income_domain_numerator) |> 
+  write_csv("analysis/deprivation/regional-income-deprivation.csv")
 
 # ---- Check Community Needs Index in Hastings neighbourhoods ----
 # Broomgrove Community Centre is in LSOA Hastings 005A (E01020972)
