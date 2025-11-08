@@ -4,8 +4,7 @@ remotes::install_github("humaniverse/geographr")
 library(tidyverse)
 library(geographr)
 library(IMD)
-
-# library(sf)
+library(sf)
 
 # ---- Analyse income and employment deprivation ----
 imd_income <-
@@ -190,3 +189,92 @@ imd2010_england_lsoa01 |>
 imd2004_england_lsoa01 |>
   filter(lsoa01_code %in% c(broomgrove, grumpy_cook)) |>
   select(IMD_decile, IMD_rank)
+
+# ---- Hidden deprivation ----
+# Count the number of households experiencing different amounts of deprivation
+# in otherwise less-deprived neighbourhoods in each Local Authority
+hidden_deprivation_ltla <-
+  census21_deprivation_england_wales_lsoa21 |>
+  filter(str_detect(lsoa21_code, "^E")) |>
+  left_join(imd2025_england_lsoa21 |> select(lsoa21_code, IMD_decile)) |>
+  left_join(lookup_lsoa21_ward24_ltla24) |>
+
+  # Keep only the least-deprived 50% of neighbourhoods
+  filter(IMD_decile > 5) |>
+
+  group_by(
+    ltla24_code,
+    ltla24_name,
+    households_number_deprivation_dimensions
+  ) |>
+  summarise(count = sum(count)) |>
+  ungroup() |>
+  group_by(ltla24_code, ltla24_name) |>
+  mutate(prop = count / sum(count)) |>
+  ungroup()
+
+# Counts and percents of households experiencing multiple deprivation in each LA
+hidden_deprivation_ltla_summary <-
+  hidden_deprivation_ltla |>
+  filter(str_detect(ltla24_code, "^E")) |>
+  filter(households_number_deprivation_dimensions >= 2) |>
+  group_by(ltla24_code, ltla24_name) |>
+  summarise(
+    percent_household_deprivation = sum(prop, na.rm = TRUE)
+  ) |>
+  ungroup() |>
+  left_join(imd2025_england_ltla24 |> select(ltla24_code, imd25_extent))
+
+# Which LAs have the highest % of households in hidden multiple deprivation
+# but the lowest % of people living in deprived neighbourhoods?
+hidden_deprivation_ltla_summary |>
+  arrange(desc(percent_household_deprivation), imd25_extent) |>
+  mutate(cum_best_p2 = cummin(imd25_extent)) |>
+  filter(imd25_extent <= cum_best_p2) # nondominated set for (max p1, min p2)
+
+# Adur has 15.3% of households in hidden deprivation and 3.3% of people in the most deprived areas so will use this for the article
+household_deprivation_adur <-
+  census21_deprivation_england_wales_lsoa21 |>
+  filter(households_number_deprivation_dimensions >= 2) |>
+  group_by(lsoa21_code) |>
+  summarise(percent_household_deprivation = sum(percent, na.rm = TRUE)) |>
+  ungroup() |>
+
+  left_join(imd2025_england_lsoa21 |> select(lsoa21_code, IMD_decile)) |>
+  left_join(lookup_lsoa21_ward24_ltla24) |>
+
+  filter(ltla24_name == "Adur")
+
+# Save hidden deprivation data for Flourish
+household_deprivation_adur |>
+  mutate(
+    percent_hidden_deprivation = if_else(
+      IMD_decile > 5,
+      percent_household_deprivation,
+      NA
+    ),
+    no_popup = if_else(is.na(percent_hidden_deprivation), "No popup", "")
+  ) |>
+  select(
+    lsoa21_code,
+    lsoa21_name,
+    percent_hidden_deprivation,
+    IMD_decile,
+    no_popup
+  ) |>
+  write_csv("analysis/deprivation/adur.csv")
+
+# Fetch LSOA 2021 boundaries and make a GeoJSON for Adur to upload to Flourish
+lsoa21_sf <- read_sf(
+  "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Lower_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V5/FeatureServer/0/query?outFields=LSOA21CD,LSOA21NM&where=1%3D1&f=geojson"
+)
+
+lsoa21_sf |>
+  select(lsoa21_code = LSOA21CD, lsoa21_name = LSOA21NM) |>
+  filter(str_detect(lsoa21_name, "^Adur")) |>
+  write_sf("analysis/deprivation/adur.geojson")
+
+# What is Adur ranked?
+imd2025_england_ltla24 |>
+  select(ltla24_name, imd_rank_of_average_score) |>
+  filter(ltla24_name == "Adur")
