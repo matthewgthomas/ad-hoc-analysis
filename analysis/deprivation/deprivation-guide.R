@@ -4,6 +4,7 @@ remotes::install_github("humaniverse/geographr")
 library(tidyverse)
 library(geographr)
 library(IMD)
+library(rio)
 library(sf)
 
 # ---- Analyse income and employment deprivation ----
@@ -278,3 +279,50 @@ lsoa21_sf |>
 imd2025_england_ltla24 |>
   select(ltla24_name, imd_rank_of_average_score) |>
   filter(ltla24_name == "Adur")
+
+# ---- Local Authorities ----
+# Compare extent and population-weighted average scores
+imd2025_england_ltla24 |>
+  select(ltla24_name, imd25_extent, imd_rank_of_average_score) |>
+  arrange(desc(imd25_extent))
+
+# Which LAs have the highest extents but are not in the worst 10% for average scores?
+imd2025_england_ltla24 |>
+  select(
+    ltla24_name,
+    imd_rank_of_average_score,
+    imd25_extent,
+    imd25_rank_of_extent
+  ) |>
+  mutate(
+    avg_decile = ntile(imd_rank_of_average_score, n = 10),
+    ext_decile = ntile(imd25_rank_of_extent, n = 10),
+  ) |>
+  filter(avg_decile > 1 & ext_decile == 1)
+
+# Load population for LSOAs
+# Source: File 6: Population denominators @ https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025
+lsoa21_pop <- import(
+  "https://assets.publishing.service.gov.uk/media/68ff5c8c394b8c2a6ddf5d90/File_6_IoD2025_Population_Denominators.xlsx",
+  sheet = "ID 2025 Population Denominators"
+) |>
+  select(
+    lsoa21_code = `LSOA code (2021)`,
+    population = `Total population: mid 2022`
+  )
+
+ltla24_pop <-
+  lsoa21_pop |>
+  left_join(lookup_lsoa21_ward24_ltla24) |>
+  group_by(ltla24_code) |>
+  summarise(population = sum(population)) |>
+  ungroup()
+
+imd2025_england_ltla24 |>
+  left_join(ltla24_pop) |>
+  select(ltla24_name, imd25_extent, imd_rank_of_average_score, population) |>
+  mutate(deprived_population = population * imd25_extent) |>
+  arrange(desc(imd25_extent))
+
+# Difference between the number of people in Manchester and Blackpool living in England's most deprived neighbourhoods
+scales::comma(333095 - 73898)
