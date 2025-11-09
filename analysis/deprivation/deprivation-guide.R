@@ -326,3 +326,18 @@ imd2025_england_ltla24 |>
 
 # Difference between the number of people in Manchester and Blackpool living in England's most deprived neighbourhoods
 scales::comma(333095 - 73898)
+
+# Save English Local Authorities and their Extents for mapping on Flourish
+# Source: https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2024-boundaries-uk-bgc-2/about
+ltla24_sf <- read_sf(
+  "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2024_Boundaries_UK_BGC/FeatureServer/0/query?where=1%3D1&outFields=LAD24CD,LAD24NM&outSR=4326&f=json"
+)
+
+ltla24_sf |>
+  select(ltla24_code = LAD24CD, ltla24_name = LAD24NM) |>
+  filter(str_detect(ltla24_code, "^E")) |>
+  write_sf("analysis/deprivation/ltla-england.geojson")
+
+imd2025_england_ltla24 |>
+  select(ltla24_code, ltla24_name, imd25_extent) |>
+  write_csv("analysis/deprivation/ltla-extent.csv")
