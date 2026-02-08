@@ -1,0 +1,17 @@
+id,name,location_name,lat,lng,excluded_reason,bbox_filter_applied
+e3c6febb-3ccb-4722-bc8a-48d495a6dd18,"Catforth, Inskip and Woodplumpton Covid19 Mutual Aid Group",North Preston,44.7435015,-63.46446390000001,outside_bbox,TRUE
+d7114f69-0269-4a31-a849-d16452a77410,Finderne Coronavirus Support,"Finderne, Moray",40.5631587,-74.5776568,outside_bbox,TRUE
+d0611b30-d37d-4117-a7ee-5c41e0fe1035,Coronavirus Support Gold Coast,"Gold Coast, Australia",-28.016667,153.4,outside_bbox,TRUE
+65821da1-d4a2-4df9-99dc-7c8a88895e2b,CDMX Ayuda Mutua,Mexico City,19.4326077,-99.133208,outside_bbox,TRUE
+bd25a916-3cfd-40c1-8c14-61e2ca00f1d7,Perth Covid-19 Mutual Aid Group,Perth,-31.9505269,115.8604572,outside_bbox,TRUE
+9b7749ff-0d8e-480f-b995-e4c04393751b,Tupelo Mutual Aid Project,"Tupelo, Mississippi",34.2576066,-88.7033859,outside_bbox,TRUE
+c6632cdc-b729-4330-a408-774bcb96102a,Bambia Project,Kenya,-0.023559,37.906193,outside_bbox,TRUE
+52f3b8a8-35ee-4c96-a53f-57f7014895ab,Andromeda,"Turku, Finland",60.4518126,22.2666302,outside_bbox,TRUE
+0c52416d-4713-4486-9afd-4b3aebf0d0da,181 Fitzroy street,Melbourne,-37.8136276,144.9630576,outside_bbox,TRUE
+b530414a-b5a6-4d71-a593-c9ac7cb4dc8c,Cleveland Pandemic Response,Cleveland Ohio,41.49932,-81.6943605,outside_bbox,TRUE
+e7ddc9b1-43b3-4c9d-bcfe-7a5b3e900021,Mabuhay 82,Quezon City Philippines,14.6760413,121.0437003,outside_bbox,TRUE
+e2dd20cb-a7e4-4df0-9fab-a4dd63079780,Oregon Hill Neighborhood,"Richmond, Virginia",37.5407246,-77.4360481,outside_bbox,TRUE
+5cd89342-bb12-46f5-ab0a-cd10844dcb1c,San Francisco COVID-19 Community Support,"San Francisco, CA",37.7749295,-122.4194155,outside_bbox,TRUE
+632bb5fe-38bb-49fa-881f-135f25a03827,Covid-19 Mutual Aid Gold Coast,"Gold Coast, Queensland, Australia",-28.016667,153.4,outside_bbox,TRUE
+7f46765d-1925-4e78-b744-7b85c18e832f,Covid-19 Mutual Aid,United States,37.09024,-95.712891,outside_bbox,TRUE
+dce94146-5ac0-4195-8b50-45bae6353fc0,Neighbourhood volunteers,Edmonton,53.5461245,-113.4938229,outside_bbox,TRUE

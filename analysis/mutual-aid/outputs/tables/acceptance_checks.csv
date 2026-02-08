@@ -1,0 +1,6 @@
+check_name,status,details
+join_integrity,PASS,analysis_rows=6791; trust_nonmissing=6791
+exposure_construction,PASS,all(any_group == n_groups > 0)
+cleaning_correctness,PASS,retained points are unique by id and inside UK bbox
+model_reproducibility,PASS,max_abs_diff=0
+reporting_completeness,PASS,outputs/tables/model_results.csv; outputs/tables/data_qc_summary.csv; outputs/figures/trust_by_group_boxplot.png; outputs/figures/trust_vs_log_groups_scatter.png; outputs/figures/msoa_map_groups_trust.png

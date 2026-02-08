@@ -1,0 +1,7 @@
+category,status,column_used,source
+deprivation,missing,NA,optional external covariates
+population_density,missing,NA,optional external covariates
+age_65_plus,missing,NA,optional external covariates
+socioeconomic,missing,NA,optional external covariates
+ethnic_diversity,missing,NA,optional external covariates
+urban_rural,available,urban_rural,geographr::ruc11_msoa11

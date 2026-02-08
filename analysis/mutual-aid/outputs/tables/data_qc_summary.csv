@@ -1,0 +1,16 @@
+section,metric,value,bbox_filter_applied
+groups_cleaning,raw_rows,2791,TRUE
+groups_cleaning,retained_rows,2775,TRUE
+groups_cleaning,excluded_duplicate_id,0,TRUE
+groups_cleaning,excluded_missing_coord,0,TRUE
+groups_cleaning,excluded_outside_bbox,16,TRUE
+spatial_join,total_groups,2775,TRUE
+spatial_join,matched_groups,2570,TRUE
+spatial_join,unmatched_groups,205,TRUE
+spatial_join,match_rate,0.9261261261261261,TRUE
+trust_join_unmatched,msoa_n,410,TRUE
+trust_join_unmatched,mean_net_trust,NA,TRUE
+trust_join_unmatched,mean_n_groups,0.3463414634146341,TRUE
+trust_join_matched,msoa_n,6791,TRUE
+trust_join_matched,mean_net_trust,-0.031365448258158554,TRUE
+trust_join_matched,mean_n_groups,0.357532027683699,TRUE

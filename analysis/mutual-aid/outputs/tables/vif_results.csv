@@ -1,0 +1,31 @@
+scenario,model_id,term,vif
+bbox_on_full,M2,any_groupTRUE,1.0564781274231587
+bbox_on_full,M2,urban_ruralUrban,1.1228635515449779
+bbox_on_full,M2,factor(region_fe)East of England,2.0388588892778934
+bbox_on_full,M2,factor(region_fe)London,2.390474011770081
+bbox_on_full,M2,factor(region_fe)North East,1.5163954616362922
+bbox_on_full,M2,factor(region_fe)North West,2.2787400476574016
+bbox_on_full,M2,factor(region_fe)South East,2.463604252625561
+bbox_on_full,M2,factor(region_fe)South West,1.9991086761030383
+bbox_on_full,M2,factor(region_fe)West Midlands,2.0447042267566724
+bbox_on_full,M2,factor(region_fe)Yorkshire and The Humber,1.9881045870047311
+bbox_off_full,M2,any_groupTRUE,1.0564781274231587
+bbox_off_full,M2,urban_ruralUrban,1.1228635515449779
+bbox_off_full,M2,factor(region_fe)East of England,2.0388588892778934
+bbox_off_full,M2,factor(region_fe)London,2.390474011770081
+bbox_off_full,M2,factor(region_fe)North East,1.5163954616362922
+bbox_off_full,M2,factor(region_fe)North West,2.2787400476574016
+bbox_off_full,M2,factor(region_fe)South East,2.463604252625561
+bbox_off_full,M2,factor(region_fe)South West,1.9991086761030383
+bbox_off_full,M2,factor(region_fe)West Midlands,2.0447042267566724
+bbox_off_full,M2,factor(region_fe)Yorkshire and The Humber,1.9881045870047311
+bbox_on_trim_top1pct,M2,any_groupTRUE,1.057752351296417
+bbox_on_trim_top1pct,M2,urban_ruralUrban,1.124344190209521
+bbox_on_trim_top1pct,M2,factor(region_fe)East of England,2.035439430816362
+bbox_on_trim_top1pct,M2,factor(region_fe)London,2.3833356789054183
+bbox_on_trim_top1pct,M2,factor(region_fe)North East,1.5187140197988749
+bbox_on_trim_top1pct,M2,factor(region_fe)North West,2.2739904182425836
+bbox_on_trim_top1pct,M2,factor(region_fe)South East,2.455388916120726
+bbox_on_trim_top1pct,M2,factor(region_fe)South West,1.9941258561208297
+bbox_on_trim_top1pct,M2,factor(region_fe)West Midlands,2.043600959439627
+bbox_on_trim_top1pct,M2,factor(region_fe)Yorkshire and The Humber,1.9843909177532388
