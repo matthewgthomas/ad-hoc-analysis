@@ -1,4 +1,5 @@
 library(tidyverse)
+library(plotly)
 
 # Load data from Our World in Data
 # Source: https://ourworldindata.org/grapher/share-of-population-in-extreme-poverty
@@ -56,6 +57,7 @@ crises <- c(
 extreme_poverty |>
   filter(code %in% crises) |>
   filter(year >= 1990) |>
+  drop_na(extreme_poverty_pct) |>
 
   ggplot(aes(
     x = year,
@@ -64,5 +66,138 @@ extreme_poverty |>
   )) +
   geom_line(aes(group = entity), show.legend = FALSE) +
   geom_point(show.legend = FALSE) +
-  facet_wrap(~entity, scales = "free") +
+  facet_wrap(~entity, scales = "free_y") +
   scale_y_continuous(limits = c(0, NA))
+
+# ---- Explore trends in Africa ----
+extreme_poverty_africa_wb <-
+  extreme_poverty |>
+  filter(str_detect(entity, "Western and Central|Eastern and Southern")) |>
+  mutate(region = str_remove(entity, " \\(WB\\)"))
+
+extreme_poverty_africa_wb |>
+  ggplot(aes(
+    x = year,
+    y = extreme_poverty_pct,
+    colour = entity
+  )) +
+  geom_line(aes(group = entity), show.legend = FALSE) +
+  geom_point(show.legend = FALSE) +
+  scale_y_continuous(limits = c(0, NA))
+
+# Eastern and Southern Africa
+# https://www.worldbank.org/ext/en/region/afr/eastern-and-southern-africa
+es_africa <- c(
+  "AGO",
+  "BDI",
+  "BWA",
+  "COM",
+  "COD",
+  "DJI",
+  "ERI",
+  "SWZ",
+  "ETH",
+  "KEN",
+  "LSO",
+  "MDG",
+  "MWI",
+  "MUS",
+  "MOZ",
+  "NAM",
+  "RWA",
+  "STP",
+  "SYC",
+  "SOM",
+  "ZAF",
+  "SSD",
+  "SDN",
+  "TZA",
+  "UGA",
+  "ZMB",
+  "ZWE"
+)
+
+# Western and Central Africa
+# https://www.worldbank.org/ext/en/region/afr/western-and-central-africa
+wc_africa <- c(
+  "BEN",
+  "BFA",
+  "CPV",
+  "CMR",
+  "CAF",
+  "TCD",
+  "COG",
+  "CIV",
+  "GNQ",
+  "GAB",
+  "GMB",
+  "GHA",
+  "GIN",
+  "GNB",
+  "LBR",
+  "MLI",
+  "MRT",
+  "NER",
+  "NGA",
+  "SEN",
+  "SLE",
+  "TGO"
+)
+
+# Check
+extreme_poverty |>
+  filter(code %in% es_africa) |>
+  distinct(code) |>
+  count() ==
+  length(es_africa)
+
+extreme_poverty |>
+  filter(code %in% wc_africa) |>
+  distinct(code) |>
+  count() ==
+  length(wc_africa)
+
+# Plot
+extreme_poverty_africa <-
+  extreme_poverty |>
+  filter(code %in% c(es_africa, wc_africa)) |>
+  filter(year >= 1980) |>
+  drop_na(extreme_poverty_pct) |>
+  mutate(
+    region = if_else(
+      code %in% es_africa,
+      "Eastern and Southern Africa",
+      "Western and Central Africa"
+    )
+  )
+
+extreme_poverty_africa |>
+  ggplot(
+    aes(
+      x = year,
+      y = extreme_poverty_pct
+      #colour = entity
+    )
+  ) +
+  geom_vline(xintercept = 2000, lty = 2) +
+  geom_line(
+    aes(group = entity),
+    colour = "grey",
+    alpha = 0.6,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    aes(text = entity),
+    colour = "grey",
+    alpha = 0.6,
+    show.legend = FALSE
+  ) +
+
+  # Plot regions
+  geom_line(data = extreme_poverty_africa_wb, colour = "black") +
+
+  facet_wrap(~region, scales = "free") +
+  scale_y_continuous(limits = c(0, NA)) +
+  theme_minimal()
+
+ggplotly()
