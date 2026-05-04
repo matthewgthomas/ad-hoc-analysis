@@ -169,6 +169,9 @@ extreme_poverty_africa <-
       "Eastern and Southern Africa",
       "Western and Central Africa"
     )
+  ) |>
+  mutate(
+    pop_in_poverty = population_historical * (extreme_poverty_pct / 100)
   )
 
 extreme_poverty_africa |>
@@ -196,8 +199,35 @@ extreme_poverty_africa |>
   # Plot regions
   geom_line(data = extreme_poverty_africa_wb, colour = "black") +
 
-  facet_wrap(~region, scales = "free") +
+  facet_wrap(~region, scales = "fixed") +
   scale_y_continuous(limits = c(0, NA)) +
   theme_minimal()
 
 ggplotly()
+
+# What's driving these differences between regions?
+extreme_poverty_africa |>
+  ggplot(aes(x = year, y = pop_in_poverty)) +
+  geom_col(aes(fill = entity), position = "stack", show.legend = FALSE) +
+  facet_wrap(~region, scales = "fixed") +
+  scale_y_continuous(limits = c(0, NA), labels = scales::comma) +
+  theme_minimal()
+
+ggplotly()
+
+# Area/stacked chart with %s of population
+extreme_poverty_africa |>
+  group_by(year, region, entity) |>
+  summarise(prop = pop_in_poverty / sum(pop_in_poverty))
+
+# Get the latest figures for each nation
+extreme_poverty_africa |>
+  group_by(region, entity) |>
+  filter(year == max(year)) |>
+
+  ggplot(aes(x = reorder(entity, pop_in_poverty), y = pop_in_poverty)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~region, scales = "free_y") +
+  scale_y_continuous(limits = c(0, NA), labels = scales::comma) +
+  theme_minimal()
