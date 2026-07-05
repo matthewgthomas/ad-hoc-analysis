@@ -1,15 +1,17 @@
 # Methods: Mutual Aid Presence and Net Trust at MSOA Level
 
 ## 1) Data sources and linkage
-- Mutual aid groups: `data/groups.json`
-- Trust outcome: `data/good_neighbours_full_data_by_msoa.xlsx`
-- Geography and lookup data: `geographr` (`boundaries_msoa11`, region lookups, rural/urban classification)
-- Linkage steps: (a) geocode groups to MSOAs via spatial join, (b) aggregate to MSOA-level exposure, (c) join trust by `msoa11_code == MSOA_code`.
+- Mutual aid groups: `data/groups.json`.
+- Trust outcome: `data/good_neighbours_full_data_by_msoa.xlsx`.
+- Deprivation covariate: `IMD::imd2019_england_msoa11` (`Score`; higher = more deprived).
+- Geography and lookup data: `geographr` (`boundaries_msoa11`, region lookups, rural/urban classification).
+- Linkage steps: (a) geocode groups to MSOAs via spatial join, (b) aggregate to MSOA-level exposure, (c) join trust by `msoa11_code == MSOA_code`, (d) join deprivation by `msoa11_code`.
 
 ## 2) Exposure and outcome definitions
 - Binary exposure: `any_group = n_groups > 0`.
 - Intensity exposure: `log_groups = log1p(n_groups)`.
-- Outcome: `Net_trust` from the trust spreadsheet.
+- Outcome: `Net_trust`.
+- Deprivation parameterization: `z_Score = scale(Score)`; effects interpreted per 1 SD increase in deprivation.
 
 ## 3) Cleaning and exclusions
 - Duplicated group IDs are excluded (keep first instance only).
@@ -20,8 +22,8 @@
 ## 4) Model specifications
 - M0: `Net_trust ~ any_group`.
 - M1: `Net_trust ~ log_groups`.
-- M2: `Net_trust ~ any_group + available covariates + region fixed effects`.
-- M3: `Net_trust ~ log_groups + available covariates + region fixed effects`.
+- M2: `Net_trust ~ any_group + z_Score + urban_rural + factor(region_fe)`.
+- M3: `Net_trust ~ log_groups + z_Score + urban_rural + factor(region_fe)`.
 - Inference: heteroskedasticity-robust HC3 standard errors and 95% confidence intervals.
 
 ## 5) Sensitivity checks
@@ -31,5 +33,5 @@
 
 ## 6) Interpretation boundaries
 - This is an association analysis, not a causal identification design.
-- Region FE and available controls reduce but do not eliminate omitted-variable bias.
-- Some requested covariates (deprivation, population density, age, socioeconomic mix, ethnic diversity) are only used when available from `data/msoa_covariates.csv`.
+- Region FE, urban/rural classification, and IMD deprivation reduce but do not eliminate omitted-variable bias.
+- Additional optional covariates (population density, age, socioeconomic mix, ethnic diversity) are used when available from `data/msoa_covariates.csv`.

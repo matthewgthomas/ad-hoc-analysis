@@ -1,69 +1,51 @@
-# Interpretation of MSOA Trust and Mutual Aid Association Results
+# Interpretation of MSOA Trust and Mutual Aid Results with IMD Deprivation
 
 ## Executive takeaway
-Across MSOAs in England, mutual aid group presence is **positively associated** with net trust, and this association is statistically precise in both unadjusted and adjusted models. The estimated association attenuates after adjustment (as expected when adding controls and region fixed effects) but remains clearly positive. Sensitivity checks show stable direction and similar magnitude, including when excluding top-count outliers and when toggling bounding-box filtering. These results should be interpreted as **associational evidence only**, not causal evidence.
+After adding IMD deprivation (`Score`, higher = more deprived), deprivation is a very strong negative correlate of trust, and the mutual-aid coefficients remain positive but are substantially smaller than in the prior adjusted models. This indicates that deprivation explains a large share of the raw trust gradient, while mutual aid still shows an independent positive association. Results remain associational, not causal.
 
-## What was analyzed
-- **Unit of analysis:** MSOA (England).
-- **Outcome:** `Net_trust`.
-- **Exposures:**
-  - `any_group` (whether an MSOA has at least one mapped mutual aid group)
-  - `log_groups` (`log(1 + n_groups)`) as an intensity measure
-- **Coverage:** 6,791 MSOAs with non-missing trust; 1,700 of 6,791 MSOAs had at least one group (~25.0%).
+## Analysis basis
+- Unit of analysis: England MSOAs.
+- Working dataset: `outputs/analysis_dataset.csv` joined to `IMD::imd2019_england_msoa11` by `msoa11_code`.
+- Coverage: 6,791 / 6,791 rows matched to IMD (`Score` missing count = 0).
+- Primary adjusted deprivation term: `z_Score` (1 SD = ~13.21 IMD score points).
 
-## Data quality and linkage interpretation
-Quality-control and linkage outputs indicate a mostly consistent pipeline:
-- Raw groups: **2,791**
-- Retained after cleaning: **2,775**
-- Excluded outside UK bounding box: **16**
-- Spatially matched groups: **2,570**
-- Unmatched groups after spatial join: **205**
+## Main estimates (primary scenario: `bbox_on_full`)
+- M0 (`Net_trust ~ any_group`): `any_groupTRUE = 0.0542` (95% CI `0.0480` to `0.0605`).
+- M1 (`Net_trust ~ log_groups`): `log_groups = 0.0580` (95% CI `0.0508` to `0.0652`).
+- M2 (`Net_trust ~ any_group + z_Score + urban_rural + region FE`):
+  - `any_groupTRUE = 0.0162` (95% CI `0.0126` to `0.0198`).
+  - `z_Score = -0.0961` (95% CI `-0.0981` to `-0.0942`).
+- M3 (`Net_trust ~ log_groups + z_Score + urban_rural + region FE`):
+  - `log_groups = 0.0199` (95% CI `0.0157` to `0.0241`).
+  - `z_Score = -0.0962` (95% CI `-0.0981` to `-0.0942`).
 
-The 205 unmatched records are groups with valid coordinates that did not intersect an MSOA polygon in the spatial join (for example, borderline geometry issues or points outside covered boundaries). Importantly, the trust-join integrity check passed (`analysis_rows=6791; trust_nonmissing=6791`), and all acceptance checks passed (join integrity, exposure construction, cleaning correctness, model reproducibility, reporting completeness).
+## Attenuation and model-fit implications
+Relative to the prior adjusted specification without IMD deprivation:
+- `any_group` attenuates from ~`0.0319` to `0.0162` (about **49.4%** smaller).
+- `log_groups` attenuates from ~`0.0344` to `0.0199` (about **42.1%** smaller).
 
-## Main findings
-Using the primary scenario (`bbox_on_full`):
+Model fit increases substantially when deprivation is included:
+- Adjusted binary model R²: from ~`0.178` to **`0.723`**.
+- Adjusted intensity model R²: from ~`0.177` to **`0.724`**.
 
-- **M0 (unadjusted binary exposure):** `any_groupTRUE = 0.0542` (95% CI: `0.0480` to `0.0605`)
-- **M1 (unadjusted intensity):** `log_groups = 0.0580` (95% CI: `0.0508` to `0.0652`)
-- **M2 (adjusted binary exposure):** `any_groupTRUE = 0.0319` (95% CI: `0.0259` to `0.0380`)
-- **M3 (adjusted intensity):** `log_groups = 0.0344` (95% CI: `0.0275` to `0.0412`)
-
-Interpretation: MSOAs with mapped mutual aid groups tend to have higher net trust than MSOAs without mapped groups, and areas with more groups also tend to show higher trust. The smaller adjusted estimates (M2/M3 vs M0/M1) are consistent with partial confounding being absorbed by included controls and region fixed effects, while leaving a positive residual association.
-
-Model fit also improves materially with adjustment: **M0 R² = 0.0389 (~0.039)** versus **M2 R² = 0.1777 (~0.178)**.
+Interpretation: deprivation is a dominant structural correlate of local trust. Ignoring it overstates the apparent mutual-aid/trust association.
 
 ## Robustness and diagnostics
-- **Sensitivity stability:**
-  - Bounding-box on/off produced identical key exposure estimates in this run.
-  - Top-1% trimming preserved direction and similar magnitude (for example, M2 `any_groupTRUE`: 0.0319 baseline vs 0.0319 trimmed; M3 `log_groups`: 0.0344 baseline vs 0.0368 trimmed).
-- **Collinearity diagnostic:** max VIF is about **2.46**, which does not indicate severe multicollinearity.
-- **Spatial diagnostic:** Moran's I on adjusted-model residuals is about **0.437** with **p=0.005**, indicating residual spatial clustering.
+- Top-1% trimming keeps signs and similar magnitudes (`any_groupTRUE ~ 0.0154`, `log_groups ~ 0.0192`, `z_Score ~ -0.0960`).
+- Bounding-box on/off remains unchanged in this workspace run.
+- Multicollinearity remains modest (max VIF ~`2.49`).
+- Residual spatial clustering persists (Moran's I ~`0.432`, `p = 0.005`).
 
-Interpretation of diagnostics: the association is consistent across key checks, but residual spatial dependence suggests model structure is incomplete geographically; non-spatial uncertainty estimates may therefore be somewhat optimistic.
+## Substantive implications
+1. Place-based deprivation must be treated as a central confounder in trust analyses.
+2. Mutual aid still has a positive residual association with trust after controlling for deprivation and broad geography, but the magnitude is materially smaller than unadjusted or weakly adjusted estimates.
+3. Policy interpretation should avoid claiming that expanding mutual aid alone will close trust gaps where deprivation is high; deprivation-sensitive strategies are likely required.
+4. Because residual spatial dependence remains, uncertainty from non-spatial models may still be optimistic.
 
-## What this does and does not imply
-This analysis supports the statement that **MSOAs with mutual aid groups tend to have higher trust**. It does **not** establish that mutual aid groups are the causal driver of trust differences.
-
-Key limitations:
-- Potential omitted confounding remains (for example, pre-existing civic capacity or local institutional factors).
-- Reverse causality is plausible (higher-trust places may be more likely to form/maintain groups).
-- Spatial autocorrelation remains in residuals, indicating unmodeled geographic structure.
-
-Control coverage in this run was limited: adjusted models include **urban/rural classification + region fixed effects**. Requested covariates not yet available in the run were:
-- deprivation
-- population density
-- age structure
-- socioeconomic composition
-- ethnic diversity
-
-## Concrete next steps to strengthen evidence
-1. Add `data/msoa_covariates.csv` with MSOA-level controls (deprivation, population density, age structure, socioeconomic composition, ethnic diversity), then rerun M2/M3.
-2. Re-estimate with spatially explicit methods (e.g., spatial error/lag models or spatially robust inference) to address residual clustering.
-3. Add temporal information on group activity (if available) to test ordering between exposure and trust.
-4. Pre-register a primary specification and robustness set to reduce analytical flexibility and improve transparency.
-
-## Figure guide for presentations
-- `outputs/figures/trust_by_group_boxplot.png`: use to show the distributional trust gap between MSOAs with vs without any mapped group.
-- `outputs/figures/trust_vs_log_groups_scatter.png`: use to show the positive trust gradient with group intensity.
-- `outputs/figures/msoa_map_groups_trust.png`: use to show geographic co-patterns and why spatial dependence diagnostics matter.
+## Limits and next steps
+- This is associational evidence and does not identify causal effects.
+- Reverse causality remains plausible (higher-trust areas may sustain more groups).
+- Next steps:
+  1. Add remaining covariates (population density, age structure, socioeconomic composition, ethnic diversity).
+  2. Use spatially explicit models or spatially robust inference.
+  3. Add temporal ordering of group activity versus trust where possible.

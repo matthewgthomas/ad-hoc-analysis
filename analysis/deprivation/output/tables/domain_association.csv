@@ -1,0 +1,8 @@
+"domain","official_weight","spearman_with_imd_score"
+"Income",0.225,0.94199342656014
+"Employment",0.225,0.939295482138684
+"Education",0.135,0.869847647928558
+"Health",0.135,0.85953564551482
+"Crime",0.093,0.821108145152594
+"Barriers",0.093,0.244704077263104
+"Living environment",0.093,0.34070630837771

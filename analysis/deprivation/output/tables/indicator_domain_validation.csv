@@ -1,0 +1,3 @@
+"domain","rank_spearman","mean_absolute_score_difference"
+"Health",0.999999850622956,0.00557730558606831
+"Crime",0.999991663113606,0.0412481320220255

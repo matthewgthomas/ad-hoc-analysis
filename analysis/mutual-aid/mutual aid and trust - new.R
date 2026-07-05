@@ -2,6 +2,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(ggplot2)
   library(geographr)
+  library(IMD)
   library(jsonlite)
   library(lmtest)
   library(readr)
@@ -26,6 +27,7 @@ config <- list(
     covariate_availability_csv = "outputs/tables/covariate_availability.csv",
     acceptance_checks_csv = "outputs/tables/acceptance_checks.csv",
     methods_writeup_md = "outputs/methods_writeup.md",
+    results_interpretation_md = "outputs/results_interpretation.md",
     excluded_points_csv = "outputs/tables/excluded_groups.csv",
     join_diagnostics_csv = "outputs/tables/join_diagnostics.csv"
   ),
@@ -45,7 +47,11 @@ config <- list(
   ),
   sensitivity_top_quantile = 0.99,
   moran_permutations = 199,
-  random_seed = 2026
+  random_seed = 2026,
+  pre_imd_reference = list(
+    m2_any_group = 0.03193250357318405,
+    m3_log_groups = 0.03436651081829589
+  )
 )
 
 ensure_output_dirs <- function(cfg) {
@@ -276,11 +282,16 @@ build_covariates <- function(cfg) {
 
   covariates <- base |>
     left_join(region_lookup, by = "msoa11_code") |>
-    left_join(ruc_lookup, by = "msoa11_code")
+    left_join(ruc_lookup, by = "msoa11_code") |>
+    left_join(
+      IMD::imd2019_england_msoa11 |>
+        select(msoa11_code, Score),
+      by = "msoa11_code"
+    )
 
   availability <- tibble::tribble(
     ~category, ~status, ~column_used, ~source,
-    "deprivation", "missing", NA_character_, "optional external covariates",
+    "deprivation", "available", "Score", "IMD::imd2019_england_msoa11",
     "population_density", "missing", NA_character_, "optional external covariates",
     "age_65_plus", "missing", NA_character_, "optional external covariates",
     "socioeconomic", "missing", NA_character_, "optional external covariates",
@@ -288,7 +299,7 @@ build_covariates <- function(cfg) {
     "urban_rural", "available", "urban_rural", "geographr::ruc11_msoa11"
   )
 
-  extra_numeric <- character()
+  extra_numeric <- "Score"
   if (file.exists(cfg$paths$optional_covariates_csv)) {
     ext <- readr::read_csv(cfg$paths$optional_covariates_csv, show_col_types = FALSE)
     ext_code <- choose_first_existing(
@@ -298,7 +309,8 @@ build_covariates <- function(cfg) {
     if (!is.na(ext_code)) {
       ext <- ext |>
         rename(msoa11_code = all_of(ext_code))
-      for (category in names(cfg$external_covariate_columns)[-1]) {
+      optional_categories <- setdiff(names(cfg$external_covariate_columns)[-1], "deprivation")
+      for (category in optional_categories) {
         col <- choose_first_existing(names(ext), cfg$external_covariate_columns[[category]])
         if (!is.na(col)) {
           availability$status[availability$category == category] <- "available"
@@ -596,13 +608,15 @@ export_outputs <- function(cfg, baseline, model_results, diagnostics, vif_result
       "## 1) Data sources and linkage",
       "- Mutual aid groups: `data/groups.json`",
       "- Trust outcome: `data/good_neighbours_full_data_by_msoa.xlsx`",
+      "- Deprivation covariate: `IMD::imd2019_england_msoa11` (`Score`; higher = more deprived).",
       "- Geography and lookup data: `geographr` (`boundaries_msoa11`, region lookups, rural/urban classification)",
-      "- Linkage steps: (a) geocode groups to MSOAs via spatial join, (b) aggregate to MSOA-level exposure, (c) join trust by `msoa11_code == MSOA_code`.",
+      "- Linkage steps: (a) geocode groups to MSOAs via spatial join, (b) aggregate to MSOA-level exposure, (c) join trust by `msoa11_code == MSOA_code`, (d) join deprivation by `msoa11_code`.",
       "",
       "## 2) Exposure and outcome definitions",
       "- Binary exposure: `any_group = n_groups > 0`.",
       "- Intensity exposure: `log_groups = log1p(n_groups)`.",
       "- Outcome: `Net_trust` from the trust spreadsheet.",
+      "- Deprivation parameterization: `z_Score = scale(Score)`.",
       "",
       "## 3) Cleaning and exclusions",
       "- Duplicated group IDs are excluded (keep first instance only).",
@@ -613,8 +627,8 @@ export_outputs <- function(cfg, baseline, model_results, diagnostics, vif_result
       "## 4) Model specifications",
       "- M0: `Net_trust ~ any_group`.",
       "- M1: `Net_trust ~ log_groups`.",
-      "- M2: `Net_trust ~ any_group + available covariates + region fixed effects`.",
-      "- M3: `Net_trust ~ log_groups + available covariates + region fixed effects`.",
+      "- M2: `Net_trust ~ any_group + z_Score + urban_rural + factor(region_fe)`.",
+      "- M3: `Net_trust ~ log_groups + z_Score + urban_rural + factor(region_fe)`.",
       "- Inference: heteroskedasticity-robust HC3 standard errors and 95% confidence intervals.",
       "",
       "## 5) Sensitivity checks",
@@ -625,7 +639,8 @@ export_outputs <- function(cfg, baseline, model_results, diagnostics, vif_result
       "## 6) Interpretation boundaries",
       "- This is an association analysis, not a causal identification design.",
       "- Region FE and available controls reduce but do not eliminate omitted-variable bias.",
-      "- Some requested covariates (deprivation, population density, age, socioeconomic mix, ethnic diversity) are only used when available from `data/msoa_covariates.csv`."
+      "- Deprivation is measured with `IMD::imd2019_england_msoa11$Score` (higher values indicate more deprivation).",
+      "- Other optional covariates (population density, age, socioeconomic mix, ethnic diversity) are used when available from `data/msoa_covariates.csv`."
     )
   )
 }
@@ -707,6 +722,45 @@ coef_compare <- models_baseline$model_results |>
   ) |>
   mutate(abs_diff = abs(estimate - estimate_repeat))
 
+new_m2_any <- models_baseline$model_results |>
+  filter(model_id == "M2", term == "any_groupTRUE") |>
+  pull(estimate)
+new_m3_log <- models_baseline$model_results |>
+  filter(model_id == "M3", term == "log_groups") |>
+  pull(estimate)
+new_m2_z <- models_baseline$model_results |>
+  filter(model_id == "M2", term == "z_Score") |>
+  pull(estimate)
+
+score_missing <- if ("Score" %in% names(baseline$analysis_df)) {
+  sum(!is.finite(baseline$analysis_df$Score))
+} else {
+  Inf
+}
+
+attenuation_any <- if (length(new_m2_any) == 1 && config$pre_imd_reference$m2_any_group != 0) {
+  1 - (new_m2_any / config$pre_imd_reference$m2_any_group)
+} else {
+  NA_real_
+}
+attenuation_log <- if (length(new_m3_log) == 1 && config$pre_imd_reference$m3_log_groups != 0) {
+  1 - (new_m3_log / config$pre_imd_reference$m3_log_groups)
+} else {
+  NA_real_
+}
+
+methods_text <- if (file.exists(config$paths$methods_writeup_md)) {
+  paste(readLines(config$paths$methods_writeup_md, warn = FALSE), collapse = "\n")
+} else {
+  ""
+}
+results_text <- if (file.exists(config$paths$results_interpretation_md)) {
+  paste(readLines(config$paths$results_interpretation_md, warn = FALSE), collapse = "\n")
+} else {
+  ""
+}
+deprecated_phrase <- "Some requested covariates (deprivation, population density, age, socioeconomic mix, ethnic diversity) are only used when available from `data/msoa_covariates.csv`."
+
 acceptance_checks <- tibble::tribble(
   ~check_name, ~status, ~details,
   "join_integrity",
@@ -732,7 +786,30 @@ acceptance_checks <- tibble::tribble(
   "retained points are unique by id and inside UK bbox",
   "model_reproducibility",
   ifelse(max(coef_compare$abs_diff, na.rm = TRUE) < 1e-8, "PASS", "FAIL"),
-  paste0("max_abs_diff=", signif(max(coef_compare$abs_diff, na.rm = TRUE), 4))
+  paste0("max_abs_diff=", signif(max(coef_compare$abs_diff, na.rm = TRUE), 4)),
+  "score_join_integrity",
+  ifelse(score_missing == 0, "PASS", "FAIL"),
+  paste0("missing_score=", score_missing),
+  "schema_has_z_score",
+  ifelse("z_Score" %in% names(baseline$analysis_df) && any(models_baseline$model_results$term == "z_Score"), "PASS", "FAIL"),
+  "z_Score present in analysis dataset and adjusted model outputs",
+  "direction_checks",
+  ifelse(length(new_m2_z) == 1 && length(new_m2_any) == 1 && length(new_m3_log) == 1 &&
+           new_m2_z < 0 && new_m2_any > 0 && new_m3_log > 0, "PASS", "FAIL"),
+  paste0("z_Score=", signif(new_m2_z, 6), "; any_groupTRUE=", signif(new_m2_any, 6), "; log_groups=", signif(new_m3_log, 6)),
+  "attenuation_vs_pre_imd_reference",
+  ifelse(!is.na(attenuation_any) && !is.na(attenuation_log) &&
+           attenuation_any > 0 && attenuation_log > 0, "PASS", "FAIL"),
+  paste0(
+    "attenuation_any_pct=", round(100 * attenuation_any, 1),
+    "; attenuation_log_pct=", round(100 * attenuation_log, 1),
+    "; reference_m2_any=", signif(config$pre_imd_reference$m2_any_group, 6),
+    "; reference_m3_log=", signif(config$pre_imd_reference$m3_log_groups, 6)
+  ),
+  "documentation_updated",
+  ifelse(!grepl(deprecated_phrase, methods_text, fixed = TRUE) &&
+           !grepl(deprecated_phrase, results_text, fixed = TRUE), "PASS", "FAIL"),
+  "legacy deprivation-unavailable wording removed from methods and interpretation"
 )
 
 export_outputs(

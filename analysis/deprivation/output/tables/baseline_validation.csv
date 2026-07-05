@@ -1,0 +1,2 @@
+"n_lsoa","score_pearson","rank_spearman","exact_rank_match","mean_absolute_rank_difference","maximum_absolute_rank_difference","maximum_absolute_score_difference"
+33755,0.999999999802786,0.999999999404375,0.903836468671308,0.101555325137019,3,0.000825999999996441

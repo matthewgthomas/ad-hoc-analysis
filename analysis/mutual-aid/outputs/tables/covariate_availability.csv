@@ -1,5 +1,5 @@
 category,status,column_used,source
-deprivation,missing,NA,optional external covariates
+deprivation,available,Score,IMD::imd2019_england_msoa11
 population_density,missing,NA,optional external covariates
 age_65_plus,missing,NA,optional external covariates
 socioeconomic,missing,NA,optional external covariates
