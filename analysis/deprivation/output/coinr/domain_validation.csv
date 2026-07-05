@@ -1,0 +1,8 @@
+"domain","treatment","score_pearson","rank_spearman","mean_absolute_score_difference","maximum_absolute_score_difference"
+"Income","Published domain score substituted (unreleased shrinkage inputs)",1,1,0,0
+"Employment","Published domain score substituted (unreleased shrinkage inputs)",1,1,0,0
+"Education, Skills and Training","File 8 plus published Children and Young People sub-domain score",0.999998795884676,0.999998435746995,0.0220971616715044,0.116829302684081
+"Health Deprivation and Disability","Reconstructed from File 8 indicators",0.999999414643004,0.9999997923776,0.000378250055059511,0.0781188736265759
+"Crime","Reconstructed from File 8 indicators",0.999988227795406,0.999991619020817,0.00274287580495663,0.0795214480184301
+"Barriers to Housing and Services","Reconstructed from File 8 indicators",0.999993177536214,0.999992305828341,0.0229361883989499,0.971999084268838
+"Living Environment","Reconstructed from File 8 indicators",0.999990786573988,0.999983808132192,0.0301659097246538,3.13819246939711

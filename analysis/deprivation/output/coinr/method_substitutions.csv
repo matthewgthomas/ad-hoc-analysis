@@ -1,0 +1,4 @@
+"component","reason","substitution"
+"Income Deprivation Domain","The released numerator is insufficient to reproduce shrinkage; some numerator values are also suppressed.","Published Income Score (rate) from File 7"
+"Employment Deprivation Domain","The released numerator is insufficient to reproduce shrinkage; some numerator values are also suppressed.","Published Employment Score (rate) from File 7"
+"Children and Young People education sub-domain","Four pupil-derived indicators are not published because they derive from pupil microdata.","Published Children and Young People sub-domain score from File 7"
