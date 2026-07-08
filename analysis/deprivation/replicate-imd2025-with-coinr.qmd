@@ -316,6 +316,138 @@ living <- assert_codes(
 stopifnot(n_lsoa == 33755L)
 ```
 
+## Estimate the factor-analysis weights
+
+The official method uses one-factor maximum-likelihood factor analysis for the Health and Crime domains. We can estimate those weights directly from the released indicators rather than copying them from the Technical Report.
+
+The procedure is:
+
+1. convert each indicator to the rank-based normal distribution defined above;
+2. fit a one-factor maximum-likelihood model with `stats::factanal()` and no rotation;
+3. orient the factor so that positive loadings mean more deprivation; and
+4. divide each loading by the sum of the loadings.
+
+The final step turns the loadings into aggregation weights that sum to one. These are normalised factor loadings, not factor-score regression coefficients.
+
+```{r}
+#| label: derive-factor-weights
+
+derive_factor_weights <- function(indicator_data) {
+  normal_scores <- as.data.frame(
+    lapply(indicator_data, imd_rank_normal)
+  )
+
+  fit <- factanal(
+    normal_scores,
+    factors = 1,
+    rotation = "none"
+  )
+
+  loadings <- unclass(fit$loadings)[, 1]
+
+  # A factor's sign is arbitrary. Orient it so that larger scores
+  # consistently represent more deprivation.
+  if (sum(loadings) < 0) {
+    loadings <- -loadings
+  }
+
+  if (any(loadings <= 0)) {
+    stop("The one-factor solution contains a non-positive loading.")
+  }
+
+  list(
+    weights = loadings / sum(loadings),
+    loadings = loadings,
+    fit = fit,
+    normal_scores = normal_scores
+  )
+}
+```
+
+Prepare the Health and Crime inputs in the same column order that will later be passed to COINr, then fit both models.
+
+```{r}
+#| label: fit-factor-models
+
+health_factor_data <- data.frame(
+  acute_morbidity = health$`Acute morbidity indicator`,
+  illness_disability =
+    health$`Comparative illness and disability ratio indicator`,
+  mental_health = health$`Mental health indicator`,
+  years_life_lost = health$`Years of potential life lost indicator`
+)
+
+crime_factor_data <- data.frame(
+  violence_injury =
+    crime$`Violence with injury, rate per 1,000 'at-risk population'`,
+  violence_no_injury =
+    crime$`Violence without injury, rate per 1,000 'at-risk population'`,
+  stalking_harassment =
+    crime$`Stalking and harassment, rate per 1,000 'at-risk population'`,
+  burglary = crime$`Burglary, rate per 1,000 'at-risk properties'`,
+  theft = crime$`Theft, rate per 1,000 'at-risk population'`,
+  criminal_damage =
+    crime$`Criminal damage, rate per 1,000 'at-risk population'`,
+  public_order_weapons =
+    crime$`Public order and Possession of weapons, rate per 1,000 'at-risk population'`,
+  antisocial_behaviour =
+    crime$`Anti-Social Behaviour, rate per 1,000 'at-risk population'`
+)
+
+health_factor <- derive_factor_weights(health_factor_data)
+crime_factor <- derive_factor_weights(crime_factor_data)
+```
+
+For verification only, compare the estimated weights with the rounded weights printed in the Technical Report. The reconstruction below uses the estimated values, not the published values.
+
+```{r}
+#| label: factor-weight-comparison
+
+factor_weight_comparison <- bind_rows(
+  tibble(
+    domain = "Health",
+    indicator = c(
+      "Acute morbidity",
+      "Comparative illness and disability ratio",
+      "Mental health",
+      "Years of potential life lost"
+    ),
+    estimated_weight = unname(health_factor$weights),
+    published_weight = c(0.222, 0.294, 0.244, 0.240)
+  ),
+  tibble(
+    domain = "Crime",
+    indicator = c(
+      "Violence with injury",
+      "Violence without injury",
+      "Stalking and harassment",
+      "Burglary",
+      "Theft",
+      "Criminal damage",
+      "Public order and weapons",
+      "Anti-social behaviour"
+    ),
+    estimated_weight = unname(crime_factor$weights),
+    published_weight = c(
+      0.151, 0.154, 0.132, 0.074,
+      0.097, 0.144, 0.145, 0.103
+    )
+  )
+) |>
+  mutate(difference = estimated_weight - published_weight)
+
+knitr::kable(factor_weight_comparison, digits = 4)
+```
+
+Every estimated weight rounds to the corresponding published three-decimal value. This independently reproduces the Health and Crime factor weights from File 8.
+
+Two lower-level factor models cannot be regenerated from public data:
+
+- the Children and Young People education sub-domain, because four of its five inputs are not released; and
+- the Mental Health composite indicator, because File 8 publishes only the already-combined indicator rather than its four administrative-data components.
+
+The factor analysis above therefore regenerates every set of factor weights for which all constituent indicators are public: the Health and Crime domain weights.
+
 ## Reconstruct the domains
 
 ### Education, Skills and Training
@@ -351,19 +483,13 @@ education_coin <- make_coin(
 
 ### Health Deprivation and Disability
 
-The four Health indicators are transformed to normal scores and combined using the factor-analysis weights reported in the Technical Report.
+The four Health indicators are transformed to normal scores and combined using the weights estimated above.
 
 ```{r}
 #| label: health-domain
 
 health_coin <- make_coin(
-  data.frame(
-    uCode,
-    acute_morbidity = health$`Acute morbidity indicator`,
-    illness_disability = health$`Comparative illness and disability ratio indicator`,
-    mental_health = health$`Mental health indicator`,
-    years_life_lost = health$`Years of potential life lost indicator`
-  ),
+  data.frame(uCode, health_factor_data),
   meta(
     c(
       "acute_morbidity",
@@ -377,7 +503,7 @@ health_coin <- make_coin(
       "Mental health",
       "Years of potential life lost"
     ),
-    Weight = c(0.222, 0.294, 0.244, 0.240)
+    Weight = unname(health_factor$weights)
   ),
   aggregate_code = "health",
   aggregate_name = "Health Deprivation and Disability",
@@ -389,23 +515,13 @@ The weights add to one, so the weighted sum is also a weighted mean here.
 
 ### Crime
 
-Crime follows the same pattern: transform eight indicator ranks to normal scores, then combine them with the published factor-analysis weights.
+Crime follows the same pattern: transform eight indicator ranks to normal scores, then combine them with the weights estimated from the one-factor model.
 
 ```{r}
 #| label: crime-domain
 
 crime_coin <- make_coin(
-  data.frame(
-    uCode,
-    violence_injury = crime$`Violence with injury, rate per 1,000 'at-risk population'`,
-    violence_no_injury = crime$`Violence without injury, rate per 1,000 'at-risk population'`,
-    stalking_harassment = crime$`Stalking and harassment, rate per 1,000 'at-risk population'`,
-    burglary = crime$`Burglary, rate per 1,000 'at-risk properties'`,
-    theft = crime$`Theft, rate per 1,000 'at-risk population'`,
-    criminal_damage = crime$`Criminal damage, rate per 1,000 'at-risk population'`,
-    public_order_weapons = crime$`Public order and Possession of weapons, rate per 1,000 'at-risk population'`,
-    antisocial_behaviour = crime$`Anti-Social Behaviour, rate per 1,000 'at-risk population'`
-  ),
+  data.frame(uCode, crime_factor_data),
   meta(
     c(
       "violence_injury",
@@ -427,16 +543,7 @@ crime_coin <- make_coin(
       "Public order and weapons",
       "Anti-social behaviour"
     ),
-    Weight = c(
-      0.151,
-      0.154,
-      0.132,
-      0.074,
-      0.097,
-      0.144,
-      0.145,
-      0.103
-    )
+    Weight = unname(crime_factor$weights)
   ),
   aggregate_code = "crime",
   aggregate_name = "Crime",
