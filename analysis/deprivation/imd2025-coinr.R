@@ -83,9 +83,10 @@ imd_rank_exponential <- function(x, constant = 23) {
   observed <- !is.na(x)
   n <- sum(observed)
   rank_fraction <- rank(x[observed], ties.method = "average") / n
-  out[observed] <- -constant * log(
-    1 - rank_fraction * (1 - exp(-100 / constant))
-  )
+  out[observed] <- -constant *
+    log(
+      1 - rank_fraction * (1 - exp(-100 / constant))
+    )
   out
 }
 
@@ -93,16 +94,19 @@ imd_rank_exponential <- function(x, constant = 23) {
 # one. The published domain weights sum to 0.999 after rounding, and MHCLG used
 # those displayed weights directly in the released IMD score.
 imd_weighted_sum <- function(x, w) {
-  if (anyNA(x)) return(NA_real_)
+  if (anyNA(x)) {
+    return(NA_real_)
+  }
   sum(x * w)
 }
 
 make_coin <- function(
-    iData,
-    indicator_meta,
-    aggregate_code,
-    aggregate_name,
-    normaliser = NULL) {
+  iData,
+  indicator_meta,
+  aggregate_code,
+  aggregate_name,
+  normaliser = NULL
+) {
   stopifnot(
     identical(names(iData)[1], "uCode"),
     identical(names(iData)[-1], indicator_meta$iCode)
@@ -185,7 +189,10 @@ education <- assert_codes(read_sheet("IoD25 Education Domain"), "Education")
 health <- assert_codes(read_sheet("IoD25 Health Domain"), "Health")
 crime <- assert_codes(read_sheet("IoD25 Crime Domain"), "Crime")
 barriers <- assert_codes(read_sheet("IoD25 Barriers Domain"), "Barriers")
-living <- assert_codes(read_sheet("IoD25 Living Env Domain"), "Living Environment")
+living <- assert_codes(
+  read_sheet("IoD25 Living Env Domain"),
+  "Living Environment"
+)
 
 # Education: four pupil indicators are not published. File 7's published
 # Children and Young People sub-domain score is therefore the narrowest valid
@@ -215,7 +222,12 @@ health_coin <- make_coin(
     years_life_lost = health$`Years of potential life lost indicator`
   ),
   meta(
-    c("acute_morbidity", "illness_disability", "mental_health", "years_life_lost"),
+    c(
+      "acute_morbidity",
+      "illness_disability",
+      "mental_health",
+      "years_life_lost"
+    ),
     c(
       "Acute morbidity",
       "Comparative illness and disability ratio",
@@ -243,13 +255,23 @@ crime_coin <- make_coin(
   ),
   meta(
     c(
-      "violence_injury", "violence_no_injury", "stalking_harassment",
-      "burglary", "theft", "criminal_damage", "public_order_weapons",
+      "violence_injury",
+      "violence_no_injury",
+      "stalking_harassment",
+      "burglary",
+      "theft",
+      "criminal_damage",
+      "public_order_weapons",
       "antisocial_behaviour"
     ),
     c(
-      "Violence with injury", "Violence without injury", "Stalking and harassment",
-      "Burglary", "Theft", "Criminal damage", "Public order and weapons",
+      "Violence with injury",
+      "Violence without injury",
+      "Stalking and harassment",
+      "Burglary",
+      "Theft",
+      "Criminal damage",
+      "Public order and weapons",
       "Anti-social behaviour"
     ),
     Weight = c(0.151, 0.154, 0.132, 0.074, 0.097, 0.144, 0.145, 0.103)
@@ -304,12 +326,18 @@ wider_barriers_coin <- make_coin(
   ),
   meta(
     c(
-      "housing_affordability", "digital_connectivity", "patient_gp_ratio",
-      "overcrowding", "homelessness"
+      "housing_affordability",
+      "digital_connectivity",
+      "patient_gp_ratio",
+      "overcrowding",
+      "homelessness"
     ),
     c(
-      "Housing affordability", "Digital connectivity deprivation",
-      "Patient-to-GP ratio", "Household overcrowding", "Homelessness"
+      "Housing affordability",
+      "Digital connectivity deprivation",
+      "Patient-to-GP ratio",
+      "Household overcrowding",
+      "Homelessness"
     ),
     Weight = rep(0.2, 5)
   ),
@@ -345,7 +373,8 @@ indoors_coin <- make_coin(
   meta(
     c("housing_condition", "energy_performance", "private_outdoor_space"),
     c(
-      "Housing in poor condition", "Housing energy performance deprivation",
+      "Housing in poor condition",
+      "Housing energy performance deprivation",
       "Housing lacking private outdoor space"
     ),
     Weight = rep(1 / 3, 3)
@@ -390,13 +419,22 @@ living_coin <- make_coin(
 
 domain_weights <- c(0.225, 0.225, 0.135, 0.135, 0.093, 0.093, 0.093)
 domain_codes <- c(
-  "income", "employment", "education", "health", "crime", "barriers",
+  "income",
+  "employment",
+  "education",
+  "health",
+  "crime",
+  "barriers",
   "living_environment"
 )
 domain_names <- c(
-  "Income", "Employment", "Education, Skills and Training",
-  "Health Deprivation and Disability", "Crime",
-  "Barriers to Housing and Services", "Living Environment"
+  "Income",
+  "Employment",
+  "Education, Skills and Training",
+  "Health Deprivation and Disability",
+  "Crime",
+  "Barriers to Housing and Services",
+  "Living Environment"
 )
 
 official_domain_data <- data.frame(
@@ -486,9 +524,18 @@ score_metrics <- function(model, score) {
 }
 
 imd_validation <- bind_rows(
-  score_metrics("Published-indicator reconstruction", reconstructed_imd_coin$score),
-  score_metrics("Published raw-domain benchmark", raw_domain_benchmark_coin$score),
-  score_metrics("Published transformed-domain benchmark", transformed_benchmark_coin$score)
+  score_metrics(
+    "Published-indicator reconstruction",
+    reconstructed_imd_coin$score
+  ),
+  score_metrics(
+    "Published raw-domain benchmark",
+    raw_domain_benchmark_coin$score
+  ),
+  score_metrics(
+    "Published transformed-domain benchmark",
+    transformed_benchmark_coin$score
+  )
 )
 
 official_domain_matrix <- official_domain_data[-1]
@@ -508,9 +555,17 @@ domain_validation <- bind_rows(lapply(seq_along(domain_codes), function(j) {
       "Reconstructed from File 8 indicators"
     },
     score_pearson = cor(reconstructed_score, official_score),
-    rank_spearman = cor(reconstructed_score, official_score, method = "spearman"),
-    mean_absolute_score_difference = mean(abs(reconstructed_score - official_score)),
-    maximum_absolute_score_difference = max(abs(reconstructed_score - official_score))
+    rank_spearman = cor(
+      reconstructed_score,
+      official_score,
+      method = "spearman"
+    ),
+    mean_absolute_score_difference = mean(abs(
+      reconstructed_score - official_score
+    )),
+    maximum_absolute_score_difference = max(abs(
+      reconstructed_score - official_score
+    ))
   )
 }))
 
@@ -535,7 +590,10 @@ results <- bind_cols(
     ),
   model_results("reconstructed_imd", reconstructed_imd_coin$score),
   model_results("raw_domain_benchmark", raw_domain_benchmark_coin$score),
-  model_results("transformed_domain_benchmark", transformed_benchmark_coin$score),
+  model_results(
+    "transformed_domain_benchmark",
+    transformed_benchmark_coin$score
+  ),
   reconstructed_domain_matrix |>
     rename_with(~ paste0("reconstructed_", .x)),
   official_domain_matrix |>
@@ -569,13 +627,16 @@ stopifnot(
   all(results$reconstructed_imd_decile %in% 1:10),
   imd_validation$rank_spearman[
     imd_validation$model == "Published-indicator reconstruction"
-  ] > 0.9999,
+  ] >
+    0.9999,
   imd_validation$decile_match[
     imd_validation$model == "Published-indicator reconstruction"
-  ] > 0.99,
+  ] >
+    0.99,
   imd_validation$maximum_absolute_rank_difference[
     imd_validation$model == "Published transformed-domain benchmark"
-  ] <= 3
+  ] <=
+    3
 )
 
 write.csv(
@@ -612,3 +673,82 @@ if (identical(Sys.getenv("IMD_SAVE_COINS"), "1")) {
 
 message("COINr reconstruction complete: ", normalizePath(output_dir))
 print(imd_validation)
+
+# ---- Sensitivity analysis ----
+# get nominal weights
+w_nom <- raw_domain_benchmark_coin$coin$Meta$Weights$Original
+
+# build data frame specifying the levels to apply the noise at
+noise_specs <- data.frame(Level = c(2, 3), NoiseFactor = c(0.25, 0.25))
+
+# get 100 replications
+noisy_wts <- get_noisy_weights(w = w_nom, noise_specs = noise_specs, Nrep = 100)
+
+# examine one of the noisy weight sets
+tail(noisy_wts[[1]])
+
+raw_domain_benchmark_coin$coin$Log$Aggregate$
+
+# component of SA_specs for weights
+l_weights <- list(
+  Address = "$Log$Aggregate$w",
+  Distribution = noisy_wts,
+  Type = "discrete"
+)
+
+imd_rank_exponential
+
+# normalisation method
+
+# first, we define the two alternatives: minmax or zscore (along with respective parameters)
+norm_alts <- list(
+  list(f_n = "n_minmax", f_n_para = list(c(1, 100))),
+  list(f_n = "n_zscore", f_n_para = list(c(10, 2)))
+)
+
+# now put this in a list
+l_norm <- list(
+  Address = "$Log$Normalise$global_specs",
+  Distribution = norm_alts,
+  Type = "discrete"
+)
+
+## aggregation
+# raw_domain_benchmark_coin$coin$Log$Aggregate$f_ag
+l_agg <- list(
+  Address = "$Log$Aggregate$f_ag",
+  Distribution = c("a_amean", "a_gmean"),
+  Type = "discrete"
+)
+
+# create overall specification list
+SA_specs <- list(
+  Normalisation = l_norm,
+  #Weights = l_weights,
+  Aggregation = l_agg
+)
+
+# Not run here: will take a few seconds to finish if you run this
+SA_res <- get_sensitivity(
+  raw_domain_benchmark_coin$coin,
+  SA_specs = SA_specs,
+  N = 100,
+  SA_type = "UA",
+  dset = "Aggregated",
+  iCode = "imd"
+)
+
+plot_uncertainty(SA_res)
+
+# Not run here: will take a few seconds to finish if you run this
+SA_res <- get_sensitivity(
+  raw_domain_benchmark_coin$coin,
+  SA_specs = SA_specs,
+  N = 100,
+  SA_type = "SA",
+  dset = "Aggregated",
+  iCode = "imd",
+  Nboot = 100
+)
+
+plot_sensitivity(SA_res)
