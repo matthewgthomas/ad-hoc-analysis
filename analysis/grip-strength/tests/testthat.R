@@ -1,0 +1,5 @@
+library(testthat)
+Sys.setenv(GRIP_PROJECT_ROOT = normalizePath(".", winslash = "/", mustWork = TRUE))
+project_file <- function(...) file.path(Sys.getenv("GRIP_PROJECT_ROOT"), ...)
+source(file.path("R", "load_all.R"))
+test_dir(file.path("tests", "testthat"), reporter = "summary")

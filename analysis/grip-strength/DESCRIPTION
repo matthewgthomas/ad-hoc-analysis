@@ -1,0 +1,30 @@
+Package: GripStrengthAnalysis
+Type: Project
+Title: NHANES Grip Strength Analysis and Personal Reference
+Version: 1.0.0
+Authors@R: person("Reproducible", "Analysis", role = c("aut", "cre"), email = "noreply@example.com")
+Description: Reproducible preparation, survey-weighted modelling, validation,
+    reporting, and a local Shiny interface for NHANES 2011-2014 adult grip strength.
+License: MIT
+Encoding: UTF-8
+Depends: R (>= 4.6.0)
+Imports:
+    bslib,
+    dplyr,
+    ggplot2,
+    haven,
+    knitr,
+    mgcv,
+    plotly,
+    purrr,
+    rmarkdown,
+    scales,
+    shiny,
+    splines,
+    survey,
+    tibble,
+    tidyr
+Suggests:
+    renv,
+    testthat,
+    xml2

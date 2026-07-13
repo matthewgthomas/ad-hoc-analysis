@@ -1,0 +1,223 @@
+---
+title: "Grip strength in US adults"
+subtitle: "NHANES 2011–2014 distributions, prediction models, and personal comparison"
+author: "Reproducible R analysis"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+    code-fold: true
+    code-summary: "Show R code"
+    theme: default
+    fig-format: png
+    link-external-newwindow: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+source(file.path("R", "load_all.R"))
+grip <- readRDS(file.path("data", "nhanes_grip_adults.rds"))
+models <- readRDS(file.path("models", "grip_models.rds"))
+qa <- readRDS(file.path("artifacts", "data_quality.rds"))
+options(digits = 3)
+```
+
+## Summary
+
+This analysis is a non-clinical reference for the US non-institutionalized adult population represented by NHANES 2011–2014. It contains `r format(nrow(grip), big.mark = ",")` adults aged 18–80; `r format(sum(grip$distribution_eligible), big.mark = ",")` have a valid survey weight, completed grip exam, and at least one maximal-effort measurement. The primary core models use `r format(sum(grip$core_eligible), big.mark = ",")` participants with age, released male/female sex category, height, and BMI.
+
+The main result is comparative rather than diagnostic: age, sex, height, and BMI explain a meaningful part of grip variation, but individual prediction intervals remain wide. Optional arm measurements, activity, handedness, pain/surgery, and posture improve prediction modestly. An observed grip value is only labelled “statistically unusual” when its empirical two-sided tail probability is below 0.05 or it falls outside the model’s 95% individual prediction interval.
+
+## Data and quality checks
+
+The source files are the NHANES [grip examination](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/MGX_G.htm), [demographics](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/DEMO_G.htm), [body measures](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/BMX_G.htm), and [physical activity](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/PAQ_G.htm) components for both cycles. Files are joined one-to-one by `SEQN`. The two-cycle MEC weight is `WTMEC2YR / 2`, following [NHANES weighting guidance](https://wwwn.cdc.gov/nchs/nhanes/tutorials/weighting.aspx).
+
+```{r}
+#| label: qa-table
+#| echo: false
+qa_table <- dplyr::bind_rows(
+  tibble::tibble(Check = "Adult records / unique IDs", Result = paste(qa$adult_rows, qa$adult_unique_seqn, sep = " / ")),
+  tibble::tibble(Check = "Valid combined MEC survey weights", Result = as.character(qa$eligibility$valid_weight)),
+  tibble::tibble(Check = "Distribution-eligible", Result = as.character(qa$eligibility$distribution)),
+  tibble::tibble(Check = "Core model cohort", Result = as.character(qa$eligibility$core)),
+  tibble::tibble(Check = "Extended model cohort", Result = as.character(qa$eligibility$extended)),
+  tibble::tibble(Check = "Standing/no-pain sensitivity cohort", Result = as.character(qa$eligibility$sensitivity)),
+  tibble::tibble(Check = "Raw bilateral values reconciled with MGDCGSZ", Result = paste0(qa$reconciliation$exact, " / ", qa$reconciliation$n)),
+  tibble::tibble(Check = "Maximum reconciliation difference (kg)", Result = as.character(qa$reconciliation$max_abs_difference))
+)
+knitr::kable(qa_table, caption = "Preparation checks used as release gates")
+```
+
+```{r}
+#| label: missingness-table
+#| echo: false
+qa$missingness |>
+  dplyr::filter(variable %in% c("best_single_grip", "bilateral_grip", "height_cm", "bmi",
+                                "arm_length_cm", "arm_circumference_cm", "activity_met_min_week")) |>
+  dplyr::mutate(
+    Variable = dplyr::recode(variable,
+      best_single_grip = "Best single-hand grip", bilateral_grip = "Bilateral grip",
+      height_cm = "Height", bmi = "BMI", arm_length_cm = "Arm length",
+      arm_circumference_cm = "Arm circumference", activity_met_min_week = "Weekly activity"
+    ),
+    Missing = scales::percent(missing_fraction, accuracy = 0.1)
+  ) |>
+  dplyr::select(Variable, Missing) |>
+  knitr::kable(caption = "Missingness among adults in scope; each model uses its own complete cases")
+```
+
+Hand 1 and Hand 2 trial order is converted to right/left using `MGATHAND`. Each hand’s maximal-effort maximum is the maximum of trials whose examiner effort flag equals 1. `best_single_grip` is the larger valid hand maximum; `bilateral_grip` is the sum when both hand maxima are available. The separately calculated raw bilateral maximum reconciles exactly with the released `MGDCGSZ` for all comparable records.
+
+## Population distributions
+
+```{r}
+#| label: distribution
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6.3
+plot_weighted_distribution(grip)
+```
+
+```{r}
+#| label: age-percentiles
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6.5
+plot_age_percentiles(grip)
+```
+
+```{r}
+#| label: salient-factors
+#| echo: false
+#| fig-width: 10
+#| fig-height: 7
+plot_salient_factors(grip)
+```
+
+These are descriptive relationships, not causal estimates. In particular, BMI combines lean and fat mass and is not a direct measure of muscle. Activity is derived from self-reported weekly frequency and duration using conventional 8-MET vigorous and 4-MET moderate/transport values.
+
+## Prediction models and validation
+
+Within each released sex category and grip outcome, the primary design-aware model is a survey-weighted Gaussian regression with natural splines for age, BMI, and height. The extended version adds arm circumference, arm length, log weekly activity, handedness, pain/surgery flags, and posture. A weighted `mgcv::gam` is retained as a predictive sensitivity check, while the `survey::svyglm` model is primary because it handles NHANES strata, PSUs, and weights directly.
+
+Five out-of-fold splits hold out entire NHANES PSU groups, so no cluster appears in both training and test data. Reciprocal cycle holdouts train on 2011–2012 and test on 2013–2014, then reverse the direction.
+
+```{r}
+#| label: model-metrics
+#| echo: false
+display_metrics <- models$metrics |>
+  dplyr::filter(engine == "survey") |>
+  dplyr::mutate(
+    Outcome = dplyr::recode(outcome, best_single_grip = "Best single hand", bilateral_grip = "Bilateral sum"),
+    Model = dplyr::recode(model_type, core = "Core", extended = "Extended", standing_no_pain = "Standing/no-pain sensitivity"),
+    RMSE = round(rmse, 2), MAE = round(mae, 2), `R²` = round(r_squared, 3),
+    `Calibration slope` = round(calibration_slope, 3),
+    `95% interval coverage` = scales::percent(interval_coverage, accuracy = 0.1)
+  ) |>
+  dplyr::select(Sex = sex, Outcome, Model, n, RMSE, MAE, `R²`, `Calibration slope`, `95% interval coverage`)
+knitr::kable(display_metrics, caption = "Cluster-held-out survey-model performance (kg unless noted)")
+```
+
+```{r}
+#| label: cycle-holdouts
+#| echo: false
+models$cycle_metrics |>
+  dplyr::mutate(
+    Outcome = dplyr::recode(outcome, best_single_grip = "Best single hand", bilateral_grip = "Bilateral sum"),
+    `Held-out cycle` = holdout_cycle,
+    RMSE = round(rmse, 2), MAE = round(mae, 2), `R²` = round(r_squared, 3),
+    `Calibration slope` = round(calibration_slope, 3)
+  ) |>
+  dplyr::select(Sex = sex, Outcome, `Held-out cycle`, n, RMSE, MAE, `R²`, `Calibration slope`) |>
+  knitr::kable(caption = "Reciprocal survey-cycle holdouts")
+```
+
+```{r}
+#| label: calibration
+#| echo: false
+#| fig-width: 9
+#| fig-height: 4.8
+plot_calibration(models)
+```
+
+```{r}
+#| label: residuals
+#| echo: false
+#| fig-width: 9
+#| fig-height: 4.8
+plot_residuals(models)
+```
+
+```{r}
+#| label: subgroup-calibration
+#| echo: false
+models$subgroup_calibration |>
+  dplyr::filter(outcome == "best_single_grip") |>
+  dplyr::mutate(
+    `Race/ethnicity (diagnostic only)` = as.character(race_ethnicity),
+    `Effective n` = round(effective_n),
+    `Mean error (kg)` = round(mean_error, 2),
+    `Calibration slope` = round(calibration_slope, 3)
+  ) |>
+  dplyr::select(Sex = sex, `Race/ethnicity (diagnostic only)`, n, `Effective n`,
+                `Mean error (kg)`, `Calibration slope`) |>
+  knitr::kable(caption = "Out-of-fold calibration audit; race/ethnicity is not a predictor")
+```
+
+Interval coverage is assessed out of fold. Personal intervals use the 2.5th and 97.5th weighted residual percentiles for the same released sex category and age band. If Kish effective sample size is below 100, adjacent age bands are added until the threshold is met.
+
+## Personal input placeholder
+
+The list below is deliberately blank. Enter age, the NHANES male/female comparison category, height, and either BMI or weight. Choose the outcome that matches the measurement protocol: `best_single_grip` for a single best hand value, or `bilateral_grip` for the sum of the best value from each hand. Do not compare a single-hand measurement with a bilateral model.
+
+```{r}
+#| label: personal-input
+# PERSONAL INPUT — replace NULL only with your own values.
+person <- list(
+  age = NULL,
+  sex = NULL,                       # "Male" or "Female"
+  height_cm = NULL,
+  bmi = NULL,                       # supply BMI OR weight_kg
+  weight_kg = NULL,
+  observed_grip_kg = NULL,          # optional; leave blank for prediction only
+  outcome = "best_single_grip",    # or "bilateral_grip"
+  arm_circumference_cm = NULL,      # optional extended-model fields below
+  arm_length_cm = NULL,
+  activity_met_min_week = NULL,
+  handedness = NULL,                # "Right", "Left", "Ambidextrous"
+  any_hand_pain = NULL,             # "No" or "Yes"
+  prior_surgery = NULL,             # "No" or "Yes"
+  posture = NULL                    # "Standing" or "Seated"
+)
+
+required_present <- all(vapply(person[c("age", "sex", "height_cm")], Negate(is.null), logical(1))) &&
+  (!is.null(person$bmi) || !is.null(person$weight_kg))
+
+if (required_present) {
+  prediction <- predict_grip(person, models)
+  comparison <- compare_grip(person, prediction, analytic_data = grip)
+  prediction[c("predicted", "lower", "upper", "gam_sensitivity", "model_type", "reference_scope")]
+  comparison
+} else {
+  message("Personal prediction not run: required values are intentionally blank. Use app.R for the guided interface.")
+}
+```
+
+## Interpretation and limitations
+
+- NHANES represents the 2011–2014 non-institutionalized US population, not a current global or UK reference.
+- Grip strength is a useful functional marker, but it is not equivalent to total upper-body strength and is not a clinical diagnosis.
+- Device, grip protocol, maximal effort, posture, hand pain, and surgery can materially affect comparison.
+- Public NHANES files in these cycles provide a binary male/female category. The model cannot represent sex or gender diversity beyond that released coding.
+- Race/ethnicity is excluded from prediction and used only for calibration diagnostics, avoiding an unsupported biological interpretation of a social category.
+- Prediction intervals describe heterogeneity among people with similar recorded factors; they do not include every source of measurement error or future change.
+
+The local Shiny app provides the same prediction and comparison functions with guided validation and personal markers. All processing, modelling, plots, and tests run in R; there is no Python dependency.
