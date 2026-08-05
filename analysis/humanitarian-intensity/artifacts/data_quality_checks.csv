@@ -1,0 +1,17 @@
+index_id,index_name,scores_in_range,rank_monotonic,ranks_start_at_one,deciles_valid,top_10_matches_decile,top_20_matches_decile,missing_scores_unranked,duplicate_scored_iso3
+debt_distress,Debt-distress classification,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+disaster_displacement,Disaster Displacement Risk Model,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+ghi,Global Hunger Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+ghs,Global Health Security Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+hdi,Human Development Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+inform_risk,INFORM Risk,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+inform_severity,INFORM Severity,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+internal_displacement,Internal Displacement Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+mpi,Multidimensional Poverty Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+nd_gain,ND-GAIN Country Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+oecd_fragility,OECD Multidimensional Fragility,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+searo,Sexual Exploitation and Abuse Risk Overview,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+un_mvi,UN Multidimensional Vulnerability Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+underfunded_crisis,Underfunded Crisis Index,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+worldrisk,WorldRiskIndex,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+wps,"Women, Peace and Security Index",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE

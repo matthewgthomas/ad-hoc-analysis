@@ -1,0 +1,34 @@
+index_id,source_country,reason
+underfunded_crisis,Regional: South Sudan,regional or multi-country response plan
+underfunded_crisis,Regional: DR Congo,regional or multi-country response plan
+underfunded_crisis,Regional: Venezuela,regional or multi-country response plan
+underfunded_crisis,Regional: Syria,regional or multi-country response plan
+underfunded_crisis,Regional: Afghanistan,regional or multi-country response plan
+underfunded_crisis,Regional: Ukraine,regional or multi-country response plan
+underfunded_crisis,Regional: Horn of Africa,regional or multi-country response plan
+hdi,Very high human development,publisher aggregate rather than country
+hdi,High human development,publisher aggregate rather than country
+hdi,Medium human development,publisher aggregate rather than country
+hdi,Low human development,publisher aggregate rather than country
+hdi,Arab States,publisher aggregate rather than country
+hdi,East Asia and the Pacific,publisher aggregate rather than country
+hdi,Europe and Central Asia,publisher aggregate rather than country
+hdi,Latin America and the Caribbean,publisher aggregate rather than country
+hdi,South Asia,publisher aggregate rather than country
+hdi,Sub-Saharan Africa,publisher aggregate rather than country
+hdi,World,publisher aggregate rather than country
+hdi,"Hong Kong, China (SAR)",valid ISO3 outside 195-country master universe
+mpi,Developing countries,publisher aggregate rather than country
+mpi,Small island developing states,publisher aggregate rather than country
+mpi,Arab States,publisher aggregate rather than country
+mpi,East Asia and the Pacific,publisher aggregate rather than country
+mpi,Europe and Central Asia,publisher aggregate rather than country
+mpi,Latin America and the Caribbean,publisher aggregate rather than country
+mpi,South Asia,publisher aggregate rather than country
+mpi,Sub-Saharan Africa,publisher aggregate rather than country
+ghs,Cook Islands,valid ISO3 outside 195-country master universe
+ghs,Niue,valid ISO3 outside 195-country master universe
+wps,Taiwan,valid ISO3 outside 195-country master universe
+wps,Hong Kong,valid ISO3 outside 195-country master universe
+wps,Puerto Rico,valid ISO3 outside 195-country master universe
+wps,Kosovo,valid ISO3 outside 195-country master universe

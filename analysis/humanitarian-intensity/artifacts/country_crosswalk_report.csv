@@ -1,0 +1,529 @@
+index_id,source_country,iso3,mapping
+underfunded_crisis,El Salvador,SLV,master country name
+underfunded_crisis,Honduras,HND,master country name
+underfunded_crisis,Venezuela,VEN,explicit alias: short country name
+underfunded_crisis,Haiti,HTI,master country name
+underfunded_crisis,Mali,MLI,master country name
+underfunded_crisis,Colombia,COL,master country name
+underfunded_crisis,Guatemala,GTM,master country name
+underfunded_crisis,DR Congo,COD,explicit alias: publisher short name
+underfunded_crisis,Burkina Faso,BFA,master country name
+underfunded_crisis,Cameroon,CMR,master country name
+underfunded_crisis,Myanmar,MMR,master country name
+underfunded_crisis,Chad,TCD,master country name
+underfunded_crisis,Syria,SYR,explicit alias: short country name
+underfunded_crisis,Malawi,MWI,master country name
+underfunded_crisis,Mozambique,MOZ,master country name
+underfunded_crisis,Yemen,YEM,master country name
+underfunded_crisis,Sudan,SDN,master country name
+underfunded_crisis,Niger,NER,master country name
+underfunded_crisis,Nigeria,NGA,master country name
+underfunded_crisis,Afghanistan,AFG,master country name
+underfunded_crisis,Rohingya JRP,BGD,explicit alias: Bangladesh country response
+underfunded_crisis,South Sudan,SSD,master country name
+underfunded_crisis,Somalia,SOM,master country name
+underfunded_crisis,Central African Republic,CAF,master country name
+underfunded_crisis,Ukraine,UKR,master country name
+underfunded_crisis,Lebanon,LBN,master country name
+underfunded_crisis,Palestine,PSE,explicit alias: publisher short name
+mpi,Afghanistan,AFG,master country name
+mpi,Algeria,DZA,master country name
+mpi,Argentina,ARG,master country name
+mpi,Azerbaijan,AZE,master country name
+mpi,Bangladesh,BGD,master country name
+mpi,Benin,BEN,master country name
+mpi,Bhutan,BTN,master country name
+mpi,Bolivia (Plurinational State of),BOL,explicit alias: UN long name
+mpi,Burkina Faso,BFA,master country name
+mpi,Cambodia,KHM,master country name
+mpi,Central African Republic,CAF,master country name
+mpi,Chad,TCD,master country name
+mpi,Comoros,COM,master country name
+mpi,Côte d'Ivoire,CIV,explicit alias: publisher capitalization
+mpi,Cuba,CUB,master country name
+mpi,Dominican Republic,DOM,master country name
+mpi,Eswatini (Kingdom of),SWZ,explicit alias: UNDP long name
+mpi,Ethiopia,ETH,master country name
+mpi,Fiji,FJI,master country name
+mpi,Gabon,GAB,master country name
+mpi,Gambia,GMB,master country name
+mpi,Ghana,GHA,master country name
+mpi,Guinea-Bissau,GNB,master country name
+mpi,Guyana,GUY,master country name
+mpi,Honduras,HND,master country name
+mpi,India,IND,master country name
+mpi,Jordan,JOR,master country name
+mpi,Kenya,KEN,master country name
+mpi,Kiribati,KIR,master country name
+mpi,Kyrgyzstan,KGZ,master country name
+mpi,Lao People's Democratic Republic,LAO,master country name
+mpi,Lesotho,LSO,master country name
+mpi,Liberia,LBR,master country name
+mpi,Madagascar,MDG,master country name
+mpi,Malawi,MWI,master country name
+mpi,Mauritania,MRT,master country name
+mpi,Mexico,MEX,master country name
+mpi,Mozambique,MOZ,master country name
+mpi,Nauru,NRU,master country name
+mpi,Nepal,NPL,master country name
+mpi,Niger,NER,master country name
+mpi,Nigeria,NGA,master country name
+mpi,North Macedonia,MKD,master country name
+mpi,"Palestine, State of",PSE,explicit alias: UNDP country name
+mpi,Peru,PER,master country name
+mpi,Philippines,PHL,master country name
+mpi,Rwanda,RWA,master country name
+mpi,Samoa,WSM,master country name
+mpi,Sao Tome and Principe,STP,master country name
+mpi,Senegal,SEN,master country name
+mpi,Serbia,SRB,master country name
+mpi,Seychelles,SYC,master country name
+mpi,Sierra Leone,SLE,master country name
+mpi,Tanzania (United Republic of),TZA,explicit alias: publisher long name
+mpi,Thailand,THA,master country name
+mpi,Tonga,TON,master country name
+mpi,Trinidad and Tobago,TTO,master country name
+mpi,Tunisia,TUN,master country name
+mpi,Turkmenistan,TKM,master country name
+mpi,Tuvalu,TUV,master country name
+mpi,Uzbekistan,UZB,master country name
+mpi,Vanuatu,VUT,master country name
+mpi,Viet Nam,VNM,master country name
+mpi,Yemen,YEM,master country name
+mpi,Zimbabwe,ZWE,master country name
+mpi,Albania,ALB,master country name
+mpi,Angola,AGO,master country name
+mpi,Armenia,ARM,master country name
+mpi,Belize,BLZ,master country name
+mpi,Botswana,BWA,master country name
+mpi,Brazil,BRA,master country name
+mpi,Burundi,BDI,master country name
+mpi,Cameroon,CMR,master country name
+mpi,China,CHN,master country name
+mpi,Colombia,COL,master country name
+mpi,Congo,COG,explicit alias: MPI short name for Republic of the Congo
+mpi,Congo (Democratic Republic of the),COD,explicit alias: MPI long name
+mpi,Costa Rica,CRI,master country name
+mpi,Ecuador,ECU,master country name
+mpi,Egypt,EGY,master country name
+mpi,El Salvador,SLV,master country name
+mpi,Georgia,GEO,master country name
+mpi,Guatemala,GTM,master country name
+mpi,Guinea,GIN,master country name
+mpi,Haiti,HTI,master country name
+mpi,Indonesia,IDN,master country name
+mpi,Iraq,IRQ,master country name
+mpi,Jamaica,JAM,master country name
+mpi,Kazakhstan,KAZ,master country name
+mpi,Libya,LBY,explicit alias: current short name
+mpi,Maldives,MDV,master country name
+mpi,Mali,MLI,master country name
+mpi,Mongolia,MNG,master country name
+mpi,Montenegro,MNE,master country name
+mpi,Morocco,MAR,master country name
+mpi,Myanmar,MMR,master country name
+mpi,Namibia,NAM,master country name
+mpi,Pakistan,PAK,master country name
+mpi,Papua New Guinea,PNG,master country name
+mpi,Paraguay,PRY,master country name
+mpi,South Africa,ZAF,master country name
+mpi,Sri Lanka,LKA,master country name
+mpi,Sudan,SDN,master country name
+mpi,Suriname,SUR,master country name
+mpi,Tajikistan,TJK,master country name
+mpi,Timor-Leste,TLS,master country name
+mpi,Togo,TGO,master country name
+mpi,Uganda,UGA,master country name
+mpi,Zambia,ZMB,master country name
+ghi,Armenia,ARM,master country name
+ghi,Belarus,BLR,master country name
+ghi,Bosnia & Herzegovina,BIH,master country name
+ghi,Bulgaria,BGR,master country name
+ghi,Chile,CHL,master country name
+ghi,China,CHN,master country name
+ghi,Costa Rica,CRI,master country name
+ghi,Croatia,HRV,master country name
+ghi,Estonia,EST,master country name
+ghi,Georgia,GEO,master country name
+ghi,Hungary,HUN,master country name
+ghi,Kazakhstan,KAZ,master country name
+ghi,Kuwait,KWT,master country name
+ghi,Latvia,LVA,master country name
+ghi,Lithuania,LTU,master country name
+ghi,Montenegro,MNE,master country name
+ghi,North Macedonia,MKD,master country name
+ghi,Romania,ROU,master country name
+ghi,Russian Federation,RUS,master country name
+ghi,Serbia,SRB,master country name
+ghi,Slovakia,SVK,master country name
+ghi,Türkiye,TUR,explicit alias: current short name
+ghi,United Arab Emirates,ARE,master country name
+ghi,Uruguay,URY,master country name
+ghi,Uzbekistan,UZB,master country name
+ghi,Moldova (Rep. of),MDA,explicit alias: GHI abbreviation
+ghi,Mongolia,MNG,master country name
+ghi,Paraguay,PRY,master country name
+ghi,Azerbaijan,AZE,master country name
+ghi,Saudi Arabia,SAU,master country name
+ghi,Mexico,MEX,master country name
+ghi,Colombia,COL,master country name
+ghi,Tunisia,TUN,master country name
+ghi,Argentina,ARG,master country name
+ghi,Brazil,BRA,master country name
+ghi,Dominican Republic,DOM,master country name
+ghi,Albania,ALB,master country name
+ghi,Algeria,DZA,master country name
+ghi,Peru,PER,master country name
+ghi,Iran (Islamic Republic of),IRN,master country name
+ghi,Panama,PAN,master country name
+ghi,El Salvador,SLV,master country name
+ghi,Jamaica,JAM,master country name
+ghi,Kyrgyzstan,KGZ,master country name
+ghi,Guyana,GUY,master country name
+ghi,Lebanon,LBN,master country name
+ghi,Morocco,MAR,master country name
+ghi,Cabo Verde,CPV,explicit alias: current short name
+ghi,Venezuela (Boliv. Rep. of),VEN,explicit alias: GHI abbreviation
+ghi,Thailand,THA,master country name
+ghi,Turkmenistan,TKM,master country name
+ghi,Fiji,FJI,master country name
+ghi,Oman,OMN,master country name
+ghi,Jordan,JOR,master country name
+ghi,Suriname,SUR,master country name
+ghi,Ukraine,UKR,master country name
+ghi,Egypt,EGY,master country name
+ghi,Ecuador,ECU,master country name
+ghi,Trinidad & Tobago,TTO,master country name
+ghi,Viet Nam,VNM,master country name
+ghi,Sri Lanka,LKA,master country name
+ghi,Honduras,HND,master country name
+ghi,Iraq,IRQ,master country name
+ghi,Tajikistan,TJK,master country name
+ghi,Ghana,GHA,master country name
+ghi,Mauritius,MUS,master country name
+ghi,Philippines,PHL,master country name
+ghi,Malaysia,MYS,master country name
+ghi,Libya,LBY,explicit alias: current short name
+ghi,Bolivia (Plurinat. State of),BOL,explicit alias: GHI abbreviation
+ghi,Indonesia,IDN,master country name
+ghi,Nepal,NPL,master country name
+ghi,Cambodia,KHM,master country name
+ghi,South Africa,ZAF,master country name
+ghi,Myanmar,MMR,master country name
+ghi,Senegal,SEN,master country name
+ghi,Eswatini,SWZ,master country name
+ghi,Cameroon,CMR,master country name
+ghi,Comoros,COM,master country name
+ghi,Gambia,GMB,master country name
+ghi,Togo,TGO,master country name
+ghi,Guatemala,GTM,master country name
+ghi,Gabon,GAB,master country name
+ghi,Namibia,NAM,master country name
+ghi,Bangladesh,BGD,master country name
+ghi,Mauritania,MRT,master country name
+ghi,Lao PDR,LAO,explicit alias: publisher abbreviation
+ghi,Nicaragua,NIC,master country name
+ghi,Uganda,UGA,master country name
+ghi,Côte d'Ivoire,CIV,explicit alias: publisher capitalization
+ghi,Solomon Islands,SLB,master country name
+ghi,Zimbabwe,ZWE,master country name
+ghi,Tanzania (United Rep. of),TZA,explicit alias: GHI abbreviation
+ghi,Rwanda,RWA,master country name
+ghi,Botswana,BWA,master country name
+ghi,Djibouti,DJI,master country name
+ghi,Malawi,MWI,master country name
+ghi,Mali,MLI,master country name
+ghi,Congo (Republic of),COG,explicit alias: IMF name
+ghi,Burkina Faso,BFA,master country name
+ghi,Guinea,GIN,master country name
+ghi,Ethiopia,ETH,master country name
+ghi,Guinea-Bissau,GNB,master country name
+ghi,India,IND,master country name
+ghi,Benin,BEN,master country name
+ghi,Kenya,KEN,master country name
+ghi,Mozambique,MOZ,master country name
+ghi,Pakistan,PAK,master country name
+ghi,Timor-Leste,TLS,master country name
+ghi,Sierra Leone,SLE,master country name
+ghi,Afghanistan,AFG,master country name
+ghi,Zambia,ZMB,master country name
+ghi,Angola,AGO,master country name
+ghi,Liberia,LBR,master country name
+ghi,Syrian Arab Republic,SYR,master country name
+ghi,Papua New Guinea,PNG,master country name
+ghi,Nigeria,NGA,master country name
+ghi,Central African Republic,CAF,master country name
+ghi,Niger,NER,master country name
+ghi,Chad,TCD,master country name
+ghi,Lesotho,LSO,master country name
+ghi,Sudan,SDN,master country name
+ghi,Korea (DPR),PRK,explicit alias: GHI abbreviation
+ghi,Haiti,HTI,master country name
+ghi,Madagascar,MDG,master country name
+ghi,Dem. Rep. of the Congo,COD,explicit alias: GHI abbreviation
+ghi,South Sudan,SSD,master country name
+ghi,Somalia,SOM,master country name
+ghi,Burundi,BDI,master country name
+ghi,Yemen,YEM,master country name
+ghs,Afghanistan,AFG,master country name
+ghs,Albania,ALB,master country name
+ghs,Algeria,DZA,master country name
+ghs,Andorra,AND,master country name
+ghs,Angola,AGO,master country name
+ghs,Antigua & Barbuda,ATG,master country name
+ghs,Argentina,ARG,master country name
+ghs,Armenia,ARM,master country name
+ghs,Australia,AUS,master country name
+ghs,Austria,AUT,master country name
+ghs,Azerbaijan,AZE,master country name
+ghs,Bahamas,BHS,master country name
+ghs,Bahrain,BHR,master country name
+ghs,Bangladesh,BGD,master country name
+ghs,Barbados,BRB,master country name
+ghs,Belarus,BLR,master country name
+ghs,Belgium,BEL,master country name
+ghs,Belize,BLZ,master country name
+ghs,Benin,BEN,master country name
+ghs,Bhutan,BTN,master country name
+ghs,Bolivia,BOL,explicit alias: short country name
+ghs,Bosnia and Hercegovina,BIH,explicit alias: GHS spelling
+ghs,Botswana,BWA,master country name
+ghs,Brazil,BRA,master country name
+ghs,Brunei,BRN,explicit alias: short country name
+ghs,Bulgaria,BGR,master country name
+ghs,Burkina Faso,BFA,master country name
+ghs,Burundi,BDI,master country name
+ghs,Cabo Verde,CPV,explicit alias: current short name
+ghs,Cambodia,KHM,master country name
+ghs,Cameroon,CMR,master country name
+ghs,Canada,CAN,master country name
+ghs,Central African Republic,CAF,master country name
+ghs,Chad,TCD,master country name
+ghs,Chile,CHL,master country name
+ghs,China,CHN,master country name
+ghs,Colombia,COL,master country name
+ghs,Comoros,COM,master country name
+ghs,Congo (Brazzaville),COG,explicit alias: GHS name
+ghs,Congo (Democratic Republic),COD,explicit alias: GHS name
+ghs,Cook Islands,COK,explicit alias: valid ISO3 outside selected master
+ghs,Costa Rica,CRI,master country name
+ghs,Côte d'Ivoire,CIV,explicit alias: publisher capitalization
+ghs,Croatia,HRV,master country name
+ghs,Cuba,CUB,master country name
+ghs,Cyprus,CYP,master country name
+ghs,Czech Republic,CZE,master country name
+ghs,Denmark,DNK,master country name
+ghs,Djibouti,DJI,master country name
+ghs,Dominica,DMA,master country name
+ghs,Dominican Republic,DOM,master country name
+ghs,Ecuador,ECU,master country name
+ghs,Egypt,EGY,master country name
+ghs,El Salvador,SLV,master country name
+ghs,Equatorial Guinea,GNQ,master country name
+ghs,Eritrea,ERI,master country name
+ghs,Estonia,EST,master country name
+ghs,eSwatini,SWZ,master country name
+ghs,Ethiopia,ETH,master country name
+ghs,Fiji,FJI,master country name
+ghs,Finland,FIN,master country name
+ghs,France,FRA,master country name
+ghs,Gabon,GAB,master country name
+ghs,Gambia,GMB,master country name
+ghs,Georgia,GEO,master country name
+ghs,Germany,DEU,master country name
+ghs,Ghana,GHA,master country name
+ghs,Greece,GRC,master country name
+ghs,Grenada,GRD,master country name
+ghs,Guatemala,GTM,master country name
+ghs,Guinea,GIN,master country name
+ghs,Guinea-Bissau,GNB,master country name
+ghs,Guyana,GUY,master country name
+ghs,Haiti,HTI,master country name
+ghs,Honduras,HND,master country name
+ghs,Hungary,HUN,master country name
+ghs,Iceland,ISL,master country name
+ghs,India,IND,master country name
+ghs,Indonesia,IDN,master country name
+ghs,Iran,IRN,explicit alias: short country name
+ghs,Iraq,IRQ,master country name
+ghs,Ireland,IRL,master country name
+ghs,Israel,ISR,master country name
+ghs,Italy,ITA,master country name
+ghs,Jamaica,JAM,master country name
+ghs,Japan,JPN,master country name
+ghs,Jordan,JOR,master country name
+ghs,Kazakhstan,KAZ,master country name
+ghs,Kenya,KEN,master country name
+ghs,Kiribati,KIR,master country name
+ghs,Kuwait,KWT,master country name
+ghs,Kyrgyz Republic,KGZ,explicit alias: IMF name
+ghs,Laos,LAO,explicit alias: common short name
+ghs,Latvia,LVA,master country name
+ghs,Lebanon,LBN,master country name
+ghs,Lesotho,LSO,master country name
+ghs,Liberia,LBR,master country name
+ghs,Libya,LBY,explicit alias: current short name
+ghs,Liechtenstein,LIE,master country name
+ghs,Lithuania,LTU,master country name
+ghs,Luxembourg,LUX,master country name
+ghs,Madagascar,MDG,master country name
+ghs,Malawi,MWI,master country name
+ghs,Malaysia,MYS,master country name
+ghs,Maldives,MDV,master country name
+ghs,Mali,MLI,master country name
+ghs,Malta,MLT,master country name
+ghs,Marshall Islands,MHL,master country name
+ghs,Mauritania,MRT,master country name
+ghs,Mauritius,MUS,master country name
+ghs,Mexico,MEX,master country name
+ghs,"Micronesia, Federated States of",FSM,explicit alias: UN long name
+ghs,Moldova,MDA,explicit alias: short country name
+ghs,Monaco,MCO,master country name
+ghs,Mongolia,MNG,master country name
+ghs,Montenegro,MNE,master country name
+ghs,Morocco,MAR,master country name
+ghs,Mozambique,MOZ,master country name
+ghs,Myanmar,MMR,master country name
+ghs,Namibia,NAM,master country name
+ghs,Nauru,NRU,master country name
+ghs,Nepal,NPL,master country name
+ghs,Netherlands,NLD,master country name
+ghs,New Zealand,NZL,master country name
+ghs,Nicaragua,NIC,master country name
+ghs,Niger,NER,master country name
+ghs,Nigeria,NGA,master country name
+ghs,Niue,NIU,explicit alias: valid ISO3 outside selected master
+ghs,North Korea,PRK,explicit alias: common short name
+ghs,North Macedonia,MKD,master country name
+ghs,Norway,NOR,master country name
+ghs,Oman,OMN,master country name
+ghs,Pakistan,PAK,master country name
+ghs,Palau,PLW,master country name
+ghs,Panama,PAN,master country name
+ghs,Papua New Guinea,PNG,master country name
+ghs,Paraguay,PRY,master country name
+ghs,Peru,PER,master country name
+ghs,Philippines,PHL,master country name
+ghs,Poland,POL,master country name
+ghs,Portugal,PRT,master country name
+ghs,Qatar,QAT,master country name
+ghs,Romania,ROU,master country name
+ghs,Russia,RUS,explicit alias: short country name
+ghs,Rwanda,RWA,master country name
+ghs,Samoa,WSM,master country name
+ghs,San Marino,SMR,master country name
+ghs,São Tomé and Príncipe,STP,explicit alias: accented spelling
+ghs,Saudi Arabia,SAU,master country name
+ghs,Senegal,SEN,master country name
+ghs,Serbia,SRB,master country name
+ghs,Seychelles,SYC,master country name
+ghs,Sierra Leone,SLE,master country name
+ghs,Singapore,SGP,master country name
+ghs,Slovakia,SVK,master country name
+ghs,Slovenia,SVN,master country name
+ghs,Solomon Islands,SLB,master country name
+ghs,Somalia,SOM,master country name
+ghs,South Africa,ZAF,master country name
+ghs,South Korea,KOR,explicit alias: common short name
+ghs,South Sudan,SSD,master country name
+ghs,Spain,ESP,master country name
+ghs,Sri Lanka,LKA,master country name
+ghs,St Kitts & Nevis,KNA,explicit alias: IMF abbreviation
+ghs,St Lucia,LCA,explicit alias: IMF abbreviation
+ghs,St Vincent & The Grenadines,VCT,explicit alias: IMF abbreviation
+ghs,Sudan,SDN,master country name
+ghs,Suriname,SUR,master country name
+ghs,Sweden,SWE,master country name
+ghs,Switzerland,CHE,master country name
+ghs,Syria,SYR,explicit alias: short country name
+ghs,Tajikistan,TJK,master country name
+ghs,Tanzania,TZA,explicit alias: short country name
+ghs,Thailand,THA,master country name
+ghs,Timor-Leste,TLS,master country name
+ghs,Togo,TGO,master country name
+ghs,Tonga,TON,master country name
+ghs,Trinidad and Tobago,TTO,master country name
+ghs,Tunisia,TUN,master country name
+ghs,Turkey,TUR,master country name
+ghs,Turkmenistan,TKM,master country name
+ghs,Tuvalu,TUV,master country name
+ghs,Uganda,UGA,master country name
+ghs,Ukraine,UKR,master country name
+ghs,United Arab Emirates,ARE,master country name
+ghs,United Kingdom,GBR,explicit alias: short country name
+ghs,United States of America,USA,master country name
+ghs,Uruguay,URY,master country name
+ghs,Uzbekistan,UZB,master country name
+ghs,Vanuatu,VUT,master country name
+ghs,Venezuela,VEN,explicit alias: short country name
+ghs,Vietnam,VNM,explicit alias: common spelling
+ghs,Yemen,YEM,master country name
+ghs,Zambia,ZMB,master country name
+ghs,Zimbabwe,ZWE,master country name
+debt_distress,Afghanistan,AFG,master country name
+debt_distress,Bangladesh,BGD,master country name
+debt_distress,Benin,BEN,master country name
+debt_distress,Bhutan,BTN,master country name
+debt_distress,Burkina Faso,BFA,master country name
+debt_distress,Burundi,BDI,master country name
+debt_distress,Cambodia,KHM,master country name
+debt_distress,Cameroon,CMR,master country name
+debt_distress,Cabo Verde,CPV,explicit alias: current short name
+debt_distress,Central African Republic,CAF,master country name
+debt_distress,Chad,TCD,master country name
+debt_distress,Comoros,COM,master country name
+debt_distress,"Congo, Democratic Republic of",COD,explicit alias: IMF name
+debt_distress,"Congo, Republic of",COG,explicit alias: IMF name
+debt_distress,Côte d'Ivoire,CIV,explicit alias: publisher capitalization
+debt_distress,Djibouti,DJI,master country name
+debt_distress,Dominica,DMA,master country name
+debt_distress,Ethiopia,ETH,master country name
+debt_distress,"Gambia, The",GMB,explicit alias: IMF name
+debt_distress,Ghana,GHA,master country name
+debt_distress,Grenada,GRD,master country name
+debt_distress,Guinea,GIN,master country name
+debt_distress,Guinea-Bissau,GNB,master country name
+debt_distress,Haiti,HTI,master country name
+debt_distress,Honduras,HND,master country name
+debt_distress,Kenya,KEN,master country name
+debt_distress,Kiribati,KIR,master country name
+debt_distress,Kyrgyz Republic,KGZ,explicit alias: IMF name
+debt_distress,Lao P.D.R.,LAO,explicit alias: IMF name
+debt_distress,Lesotho,LSO,master country name
+debt_distress,Liberia,LBR,master country name
+debt_distress,Madagascar,MDG,master country name
+debt_distress,Malawi,MWI,master country name
+debt_distress,Maldives,MDV,master country name
+debt_distress,Mali,MLI,master country name
+debt_distress,Marshall Islands,MHL,master country name
+debt_distress,Mauritania,MRT,master country name
+debt_distress,Micronesia,FSM,explicit alias: IMF short name
+debt_distress,Moldova,MDA,explicit alias: short country name
+debt_distress,Mozambique,MOZ,master country name
+debt_distress,Myanmar,MMR,master country name
+debt_distress,Nepal,NPL,master country name
+debt_distress,Nicaragua,NIC,master country name
+debt_distress,Niger,NER,master country name
+debt_distress,Papua New Guinea,PNG,master country name
+debt_distress,Rwanda,RWA,master country name
+debt_distress,Samoa,WSM,master country name
+debt_distress,São Tomé and Príncipe,STP,explicit alias: accented spelling
+debt_distress,Senegal,SEN,master country name
+debt_distress,Sierra Leone,SLE,master country name
+debt_distress,Solomon Islands,SLB,master country name
+debt_distress,Somalia,SOM,master country name
+debt_distress,South Sudan,SSD,master country name
+debt_distress,St. Vincent and the Grenadines,VCT,explicit alias: IMF abbreviation
+debt_distress,Sudan,SDN,master country name
+debt_distress,Tajikistan,TJK,master country name
+debt_distress,Tanzania,TZA,explicit alias: short country name
+debt_distress,Timor Leste,TLS,master country name
+debt_distress,Togo,TGO,master country name
+debt_distress,Tonga,TON,master country name
+debt_distress,Tuvalu,TUV,master country name
+debt_distress,Uganda,UGA,master country name
+debt_distress,Uzbekistan,UZB,master country name
+debt_distress,Vanuatu,VUT,master country name
+debt_distress,"Yemen, Republic of",YEM,explicit alias: IMF name
+debt_distress,Zambia,ZMB,master country name
+debt_distress,Zimbabwe,ZWE,master country name

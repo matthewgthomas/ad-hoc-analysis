@@ -1,0 +1,28 @@
+Package: humanitarianintensity
+Type: Project
+Title: Country-Level Humanitarian Vulnerability Indices
+Version: 0.1.0
+Authors@R: person("Analysis", "Team", role = c("aut", "cre"), email = "analysis@example.org")
+Description: Reproducible ingestion, harmonisation, ranking, and quality assurance
+    for sixteen country-level vulnerability and humanitarian indices.
+License: MIT
+Encoding: UTF-8
+Depends: R (>= 4.3)
+Imports:
+    countrycode,
+    digest,
+    dplyr,
+    httr2,
+    jsonlite,
+    pdftools,
+    purrr,
+    readr,
+    readxl,
+    rvest,
+    stringr,
+    testthat (>= 3.0.0),
+    tibble,
+    tidyr
+Suggests:
+    renv
+Config/testthat/edition: 3
